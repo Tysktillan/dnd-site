@@ -89,8 +89,8 @@ export default function MediaLibraryPage() {
     setAudioAssets(data)
 
     // Track which soundboard slots are occupied
-    const occupied = new Set(
-      data.filter((a: AudioAsset) => a.soundboardSlot !== null).map((a: AudioAsset) => a.soundboardSlot)
+    const occupied = new Set<number>(
+      data.filter((a: AudioAsset) => a.soundboardSlot !== null).map((a: AudioAsset) => a.soundboardSlot as number)
     )
     setSoundboardSlots(occupied)
   }
