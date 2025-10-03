@@ -60,6 +60,7 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     maxHp: '',
     isPlayer: false
   })
+  const [hpInputs, setHpInputs] = useState<{ [key: string]: string }>({})
   const panelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -283,6 +284,21 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     } catch (error) {
       console.error('Error updating damage:', error)
     }
+  }
+
+  const applyHpChange = (init: Initiative) => {
+    const inputValue = hpInputs[init.id] || ''
+    if (!inputValue.trim()) return
+
+    const amount = parseInt(inputValue)
+    if (isNaN(amount)) return
+
+    // Positive numbers heal (reduce damage), negative numbers damage (increase damage)
+    const newDamageTaken = init.damageTaken - amount
+    updateDamage(init.id, newDamageTaken)
+
+    // Clear the input
+    setHpInputs({ ...hpInputs, [init.id]: '' })
   }
 
   const deleteInitiative = async (initiativeId: string) => {
@@ -634,22 +650,25 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
                         </div>
                         <div className="flex items-center gap-1">
                           {init.maxHp !== null && (
-                            <div className="flex gap-1">
+                            <div className="flex items-center gap-1">
+                              <Input
+                                type="number"
+                                value={hpInputs[init.id] || ''}
+                                onChange={(e) => setHpInputs({ ...hpInputs, [init.id]: e.target.value })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    applyHpChange(init)
+                                  }
+                                }}
+                                placeholder="±HP"
+                                className="h-7 w-16 text-xs bg-black/50 border-stone-800 text-center"
+                              />
                               <Button
                                 size="sm"
-                                variant="outline"
-                                onClick={() => updateDamage(init.id, init.damageTaken + 5)}
-                                className="h-6 w-6 p-0 text-xs border-stone-800 hover:bg-red-950/30"
+                                onClick={() => applyHpChange(init)}
+                                className="h-7 px-2 text-xs bg-stone-900 hover:bg-stone-800"
                               >
-                                -5
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateDamage(init.id, init.damageTaken - 5)}
-                                className="h-6 w-6 p-0 text-xs border-stone-800 hover:bg-green-950/30"
-                              >
-                                +5
+                                ✓
                               </Button>
                             </div>
                           )}
