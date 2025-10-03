@@ -26,13 +26,33 @@ type Combat = {
   initiatives: Initiative[]
 }
 
+type CombatSetup = {
+  name: string
+  players: Array<{ name: string; initiative: string }>
+  enemies: Array<{ name: string; initiative: string; ac: string; hp: string }>
+}
+
+const DEFAULT_PLAYERS = [
+  'Ala',
+  'Celeric',
+  'Jerry',
+  'Sylvando/Siegfrid',
+  'Petter-Jöns',
+  'Vanya'
+]
+
 export function QuickCombat({ onClose }: { onClose: () => void }) {
   const [combat, setCombat] = useState<Combat | null>(null)
   const [position, setPosition] = useState({ x: window.innerWidth - 450, y: 100 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
-  const [newCombatName, setNewCombatName] = useState('')
   const [showNewCombat, setShowNewCombat] = useState(false)
+  const [combatSetup, setCombatSetup] = useState<CombatSetup>({
+    name: '',
+    players: DEFAULT_PLAYERS.map(name => ({ name, initiative: '' })),
+    enemies: []
+  })
+  const [showAddInitiative, setShowAddInitiative] = useState(false)
   const [newInitiative, setNewInitiative] = useState({
     name: '',
     initiativeRoll: '',
@@ -40,7 +60,6 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     maxHp: '',
     isPlayer: false
   })
-  const [showAddInitiative, setShowAddInitiative] = useState(false)
   const panelRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -90,24 +109,100 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
   }
 
   const createCombat = async () => {
-    if (!newCombatName.trim()) return
+    if (!combatSetup.name.trim()) return
+
+    // Validate at least one player has initiative
+    const hasPlayerInit = combatSetup.players.some(p => p.initiative.trim())
+    if (!hasPlayerInit) {
+      alert('Please enter at least one player initiative')
+      return
+    }
 
     try {
+      // Create combat
       const response = await fetch('/api/combat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: newCombatName,
+          name: combatSetup.name,
           phase: 'active'
         }),
       })
       const newCombat = await response.json()
-      setCombat({ ...newCombat, initiatives: [] })
-      setNewCombatName('')
+
+      // Add all players with initiative values
+      const playerPromises = combatSetup.players
+        .filter(p => p.initiative.trim())
+        .map(player =>
+          fetch(`/api/combat/${newCombat.id}/initiative`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: player.name,
+              initiativeRoll: parseInt(player.initiative),
+              armorClass: null,
+              maxHp: null,
+              damageTaken: 0,
+              isPlayer: true,
+            }),
+          })
+        )
+
+      // Add all enemies
+      const enemyPromises = combatSetup.enemies.map(enemy =>
+        fetch(`/api/combat/${newCombat.id}/initiative`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: enemy.name,
+            initiativeRoll: parseInt(enemy.initiative),
+            armorClass: enemy.ac ? parseInt(enemy.ac) : null,
+            maxHp: enemy.hp ? parseInt(enemy.hp) : null,
+            damageTaken: 0,
+            isPlayer: false,
+          }),
+        })
+      )
+
+      await Promise.all([...playerPromises, ...enemyPromises])
+
+      // Reset form and fetch the new combat
+      setCombatSetup({
+        name: '',
+        players: DEFAULT_PLAYERS.map(name => ({ name, initiative: '' })),
+        enemies: []
+      })
       setShowNewCombat(false)
+      fetchActiveCombat()
     } catch (error) {
       console.error('Error creating combat:', error)
     }
+  }
+
+  const addEnemy = () => {
+    setCombatSetup({
+      ...combatSetup,
+      enemies: [...combatSetup.enemies, { name: '', initiative: '', ac: '', hp: '' }]
+    })
+  }
+
+  const removeEnemy = (index: number) => {
+    setCombatSetup({
+      ...combatSetup,
+      enemies: combatSetup.enemies.filter((_, i) => i !== index)
+    })
+  }
+
+  const updateEnemy = (index: number, field: string, value: string) => {
+    const updated = [...combatSetup.enemies]
+    updated[index] = { ...updated[index], [field]: value }
+    setCombatSetup({ ...combatSetup, enemies: updated })
+  }
+
+  const updatePlayerInitiative = (index: number, initiative: string) => {
+    const updated = [...combatSetup.players]
+    updated[index] = { ...updated[index], initiative }
+    setCombatSetup({ ...combatSetup, players: updated })
   }
 
   const addInitiative = async () => {
@@ -260,26 +355,120 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
                 Start New Combat
               </Button>
             ) : (
-              <div className="space-y-2">
-                <Input
-                  value={newCombatName}
-                  onChange={(e) => setNewCombatName(e.target.value)}
-                  placeholder="Combat name..."
-                  className="bg-black/50 border-stone-900"
-                  autoFocus
-                  onKeyDown={(e) => e.key === 'Enter' && createCombat()}
-                />
-                <div className="flex gap-2">
-                  <Button onClick={createCombat} size="sm" className="flex-1 bg-green-900 hover:bg-green-800">
-                    Create
+              <div className="space-y-3">
+                {/* Combat Name */}
+                <div>
+                  <label className="text-xs text-stone-400 mb-1 block">Combat Name</label>
+                  <Input
+                    value={combatSetup.name}
+                    onChange={(e) => setCombatSetup({ ...combatSetup, name: e.target.value })}
+                    placeholder="e.g., Vampire Ambush"
+                    className="bg-black/50 border-stone-900"
+                    autoFocus
+                  />
+                </div>
+
+                {/* Players Section */}
+                <div className="space-y-2">
+                  <label className="text-xs text-stone-400 block">Players (Enter Initiative)</label>
+                  <div className="space-y-1.5 bg-black/30 p-2 rounded-lg border border-stone-900">
+                    {combatSetup.players.map((player, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="text-xs text-stone-400 flex-1 truncate">{player.name}</span>
+                        <Input
+                          type="number"
+                          value={player.initiative}
+                          onChange={(e) => updatePlayerInitiative(index, e.target.value)}
+                          placeholder="Init"
+                          className="bg-black/50 border-stone-800 text-sm w-16 h-7"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Enemies Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs text-stone-400">Enemies</label>
+                    <Button onClick={addEnemy} size="sm" className="h-6 text-xs bg-stone-900 hover:bg-stone-800">
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add Enemy
+                    </Button>
+                  </div>
+                  {combatSetup.enemies.length > 0 && (
+                    <div className="space-y-2 bg-black/30 p-2 rounded-lg border border-stone-900">
+                      {combatSetup.enemies.map((enemy, index) => (
+                        <div key={index} className="space-y-1.5 p-2 bg-red-950/20 rounded border border-red-900/30">
+                          <div className="flex gap-2">
+                            <Input
+                              value={enemy.name}
+                              onChange={(e) => updateEnemy(index, 'name', e.target.value)}
+                              placeholder="Enemy name"
+                              className="bg-black/50 border-stone-800 text-xs flex-1 h-7"
+                            />
+                            <Button
+                              onClick={() => removeEnemy(index)}
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 w-7 p-0 hover:bg-red-950/50"
+                            >
+                              <X className="h-3 w-3 text-red-400" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1.5">
+                            <Input
+                              type="number"
+                              value={enemy.initiative}
+                              onChange={(e) => updateEnemy(index, 'initiative', e.target.value)}
+                              placeholder="Init"
+                              className="bg-black/50 border-stone-800 text-xs h-7"
+                            />
+                            <Input
+                              type="number"
+                              value={enemy.ac}
+                              onChange={(e) => updateEnemy(index, 'ac', e.target.value)}
+                              placeholder="AC"
+                              className="bg-black/50 border-stone-800 text-xs h-7"
+                            />
+                            <Input
+                              type="number"
+                              value={enemy.hp}
+                              onChange={(e) => updateEnemy(index, 'hp', e.target.value)}
+                              placeholder="HP"
+                              className="bg-black/50 border-stone-800 text-xs h-7"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={createCombat} className="flex-1 bg-green-900 hover:bg-green-800">
+                    <Swords className="h-4 w-4 mr-2" />
+                    Start Combat
                   </Button>
-                  <Button onClick={() => setShowNewCombat(false)} size="sm" variant="outline" className="flex-1">
+                  <Button
+                    onClick={() => {
+                      setShowNewCombat(false)
+                      setCombatSetup({
+                        name: '',
+                        players: DEFAULT_PLAYERS.map(name => ({ name, initiative: '' })),
+                        enemies: []
+                      })
+                    }}
+                    variant="outline"
+                    className="border-stone-800"
+                  >
                     Cancel
                   </Button>
                 </div>
               </div>
             )}
-            <p className="text-xs text-stone-600 text-center">No active combat</p>
+            {!showNewCombat && <p className="text-xs text-stone-600 text-center">No active combat</p>}
           </div>
         ) : (
           <div className="p-4 space-y-3">
