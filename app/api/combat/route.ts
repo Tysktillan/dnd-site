@@ -24,13 +24,15 @@ export async function POST(request: Request) {
     // End any active combats first
     await prisma.combat.updateMany({
       where: { isActive: true },
-      data: { isActive: false }
+      data: { isActive: false, phase: 'setup' }
     })
 
     const combat = await prisma.combat.create({
       data: {
         name: body.name,
         sessionId: body.sessionId || null,
+        phase: body.phase || 'setup',
+        isActive: true,
       },
       include: {
         initiatives: true
