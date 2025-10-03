@@ -146,7 +146,15 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
           phase: 'active'
         }),
       })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Combat creation failed:', response.status, errorText)
+        throw new Error(`Failed to create combat: ${response.status} ${response.statusText}`)
+      }
+
       const newCombat = await response.json()
+      console.log('Combat created successfully:', newCombat)
 
       // Add all players with initiative values
       const playerPromises = combatSetup.players
