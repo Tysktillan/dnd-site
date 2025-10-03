@@ -93,14 +93,18 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     try {
       const response = await fetch('/api/combat')
       const data = await response.json()
+      console.log('Fetched combats:', data)
       const activeCombat = data.find((c: Combat) => c.phase === 'active')
+      console.log('Active combat found:', activeCombat)
 
       if (activeCombat) {
         // Fetch initiatives for this combat
         const initResponse = await fetch(`/api/combat/${activeCombat.id}/initiative`)
         const initiatives = await initResponse.json()
+        console.log('Initiatives:', initiatives)
         setCombat({ ...activeCombat, initiatives })
       } else {
+        console.log('No active combat found, setting combat to null')
         setCombat(null)
       }
     } catch (error) {
@@ -166,7 +170,9 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
 
       await Promise.all([...playerPromises, ...enemyPromises])
 
-      // Reset form and fetch the new combat
+      console.log('Combat and initiatives created, combat ID:', newCombat.id)
+
+      // Reset form
       setCombatSetup({
         name: '',
         players: DEFAULT_PLAYERS.map(name => ({ name, initiative: '' })),
@@ -174,10 +180,11 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
       })
       setShowNewCombat(false)
 
-      // Wait a moment for the database to update, then fetch
-      setTimeout(() => {
-        fetchActiveCombat()
-      }, 100)
+      // Wait for the database to update, then fetch
+      // Use a longer delay and await the fetch
+      await new Promise(resolve => setTimeout(resolve, 300))
+      await fetchActiveCombat()
+      console.log('Combat state after fetch:', combat)
     } catch (error) {
       console.error('Error creating combat:', error)
       alert('Failed to create combat. Please try again.')
