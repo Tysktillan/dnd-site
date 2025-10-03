@@ -252,18 +252,13 @@ export default function LoginPage() {
               </form>
 
               {/* Footer */}
-              <div className="mt-8 pt-6 border-t border-stone-900/50">
-                <p className="text-xs text-stone-600 text-center">
-                  Test credentials: <span className="text-stone-500 font-mono">dm / password123</span>
-                </p>
-              </div>
             </div>
           </div>
 
           {/* Bottom Quote */}
           <div className="mt-10 text-center select-none">
             <p className="text-stone-700 text-sm italic font-serif">
-              "The Devil Strahd awaits in the shadows..."
+              &quot;The Devil Strahd awaits in the shadows...&quot;
             </p>
           </div>
         </div>

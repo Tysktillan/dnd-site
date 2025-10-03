@@ -78,7 +78,7 @@ export default function SessionsPage() {
   const [selectedAudioIds, setSelectedAudioIds] = useState<string[]>([])
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([])
   const [assetUrls, setAssetUrls] = useState<{ [assetId: string]: string }>({})
-  const [audioAssets, setAudioAssets] = useState<{ [assetId: string]: any }>({})
+  const [audioAssets, setAudioAssets] = useState<{ [assetId: string]: { id: string; name: string; url: string; category: string; sourceType: string } }>({})
   const audioRefs = useRef<{ [assetId: string]: HTMLAudioElement }>({})
 
   useEffect(() => {
@@ -146,12 +146,12 @@ export default function SessionsPage() {
 
     // Build URL lookup map and audio asset map
     const urlMap: { [assetId: string]: string } = {}
-    const audioMap: { [assetId: string]: any } = {}
-    audioAssetsArray.forEach((asset: any) => {
+    const audioMap: { [assetId: string]: { id: string; name: string; url: string; category: string; sourceType: string } } = {}
+    audioAssetsArray.forEach((asset: { id: string; name: string; url: string; category: string; sourceType: string }) => {
       urlMap[asset.id] = asset.url
       audioMap[asset.id] = asset
     })
-    imageAssets.forEach((asset: any) => {
+    imageAssets.forEach((asset: { id: string; url: string }) => {
       urlMap[asset.id] = asset.url
     })
 
@@ -1012,7 +1012,7 @@ export default function SessionsPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-slate-500 text-sm">
-                    No events planned yet. Click "Add Event" to start.
+                    No events planned yet. Click &quot;Add Event&quot; to start.
                   </div>
                 )}
               </div>
