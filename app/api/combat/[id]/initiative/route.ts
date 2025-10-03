@@ -1,6 +1,23 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const initiatives = await prisma.initiative.findMany({
+      where: { combatId: id },
+      orderBy: { initiativeRoll: 'desc' }
+    })
+    return NextResponse.json(initiatives)
+  } catch (error) {
+    console.error('Error fetching initiatives:', error)
+    return NextResponse.json({ error: 'Failed to fetch initiatives' }, { status: 500 })
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -21,7 +38,8 @@ export async function POST(
       }
     })
     return NextResponse.json(initiative)
-  } catch {
+  } catch (error) {
+    console.error('Error creating initiative:', error)
     return NextResponse.json({ error: 'Failed to create initiative' }, { status: 500 })
   }
 }
