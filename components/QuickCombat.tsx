@@ -173,9 +173,14 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
         enemies: []
       })
       setShowNewCombat(false)
-      fetchActiveCombat()
+
+      // Wait a moment for the database to update, then fetch
+      setTimeout(() => {
+        fetchActiveCombat()
+      }, 100)
     } catch (error) {
       console.error('Error creating combat:', error)
+      alert('Failed to create combat. Please try again.')
     }
   }
 
@@ -552,9 +557,10 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
 
             {/* Initiative list */}
             <div className="space-y-2">
-              {combat.initiatives
-                .sort((a, b) => b.initiativeRoll - a.initiativeRoll)
-                .map((init, index) => {
+              {combat.initiatives && combat.initiatives.length > 0 ? (
+                combat.initiatives
+                  .sort((a, b) => b.initiativeRoll - a.initiativeRoll)
+                  .map((init, index) => {
                   const currentHp = getCurrentHp(init)
                   const isDead = currentHp !== null && currentHp <= 0
 
@@ -630,8 +636,8 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
                       </div>
                     </div>
                   )
-                })}
-              {combat.initiatives.length === 0 && (
+                })
+              ) : (
                 <p className="text-xs text-stone-600 text-center py-4">No combatants yet</p>
               )}
             </div>
