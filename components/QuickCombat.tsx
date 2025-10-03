@@ -661,7 +661,7 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
                                   }
                                 }}
                                 placeholder="±HP"
-                                className="h-7 w-16 text-xs bg-black/50 border-stone-800 text-center"
+                                className="h-7 w-16 text-xs bg-black/50 border-stone-800 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                               <Button
                                 size="sm"
