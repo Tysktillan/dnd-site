@@ -691,18 +691,19 @@ export default function SessionsPage() {
                       {/* Images */}
                       {hasImages && (
                         <div>
-                          <h4 className="text-sm font-medium text-slate-400 mb-2">Images</h4>
+                          <h4 className="text-sm font-medium text-stone-500 mb-2">Images</h4>
                           <div className="grid grid-cols-2 gap-3">
                             {JSON.parse(event.imageUrls || '[]').map((assetId: string, idx: number) => {
                               const url = assetUrls[assetId]
                               if (!url) return null
                               return (
-                                <img
-                                  key={idx}
-                                  src={url}
-                                  alt={`Event image ${idx + 1}`}
-                                  className="w-full h-auto max-h-96 object-contain rounded"
-                                />
+                                <div key={idx} className="flex items-center justify-center bg-black/30 rounded-lg p-2 border border-stone-900">
+                                  <img
+                                    src={url}
+                                    alt={`Event image ${idx + 1}`}
+                                    className="max-w-full max-h-64 w-auto h-auto object-contain rounded"
+                                  />
+                                </div>
                               )
                             })}
                           </div>

@@ -700,12 +700,14 @@ export default function MediaLibraryPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filterAssets(imageAssets).map((asset) => (
             <Card key={asset.id} className="overflow-hidden bg-slate-800 border-slate-700">
-              <div className="relative aspect-square">
-                <img
-                  src={asset.url}
-                  alt={asset.name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="relative w-full" style={{ minHeight: '200px', maxHeight: '300px' }}>
+                <div className="w-full h-full flex items-center justify-center bg-slate-900 p-2">
+                  <img
+                    src={asset.url}
+                    alt={asset.name}
+                    className="max-w-full max-h-[280px] w-auto h-auto object-contain"
+                  />
+                </div>
                 <Button
                   size="sm"
                   variant="ghost"
