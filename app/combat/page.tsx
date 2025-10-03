@@ -87,6 +87,22 @@ export default function CombatPage() {
     setPlayers(data)
   }
 
+  const deleteCombat = async (combatId: string) => {
+    if (!confirm('Are you sure you want to delete this combat? This cannot be undone.')) {
+      return
+    }
+
+    try {
+      await fetch(`/api/combat/${combatId}`, {
+        method: 'DELETE',
+      })
+      fetchCombats()
+    } catch (error) {
+      console.error('Error deleting combat:', error)
+      alert('Failed to delete combat. Please try again.')
+    }
+  }
+
   const createCombat = async () => {
     const response = await fetch('/api/combat', {
       method: 'POST',
@@ -568,15 +584,25 @@ export default function CombatPage() {
                 {combats
                   .filter(c => !c.isActive)
                   .map((combat) => (
-                    <Card key={combat.id} className="p-4 bg-slate-800 border-slate-700">
+                    <Card key={combat.id} className="p-4 bg-stone-950/90 backdrop-blur-xl border-stone-900">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-semibold text-white">{combat.name}</h4>
-                          <p className="text-sm text-slate-400">
-                            {combat.initiatives.length} combatants • {combat.round} rounds • {combat.outcome}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-stone-100">{combat.name}</h4>
+                          <p className="text-sm text-stone-500">
+                            {combat.initiatives.length} combatants • {combat.round} rounds • {combat.outcome || 'No outcome recorded'}
                           </p>
                         </div>
-                        <Save className="h-5 w-5 text-slate-500" />
+                        <div className="flex items-center gap-2">
+                          <Save className="h-5 w-5 text-stone-600" />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteCombat(combat.id)}
+                            className="hover:bg-red-950/30"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                          </Button>
+                        </div>
                       </div>
                     </Card>
                   ))}
