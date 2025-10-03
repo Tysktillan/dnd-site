@@ -27,14 +27,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useRouter } from 'next/navigation'
 import { SoundboardPanel } from './SoundboardPanel'
+import { QuickCombat } from './QuickCombat'
 
 export function QuickControls() {
-  const router = useRouter()
   const [isExpanded, setIsExpanded] = useState(false)
   const [showNoteDialog, setShowNoteDialog] = useState(false)
   const [showSoundboard, setShowSoundboard] = useState(false)
+  const [showCombat, setShowCombat] = useState(false)
   const [noteForm, setNoteForm] = useState({
     title: '',
     content: '',
@@ -53,7 +53,7 @@ export function QuickControls() {
   }
 
   const openCombat = () => {
-    router.push('/combat')
+    setShowCombat(!showCombat)
     setIsExpanded(false)
   }
 
@@ -120,6 +120,9 @@ export function QuickControls() {
 
       {/* Soundboard Panel */}
       {showSoundboard && <SoundboardPanel onClose={() => setShowSoundboard(false)} />}
+
+      {/* Quick Combat Panel */}
+      {showCombat && <QuickCombat onClose={() => setShowCombat(false)} />}
 
       {/* Quick Note Dialog */}
       <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
