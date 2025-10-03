@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Authentication
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // Hashed password
+  role      String   @default("player") // 'dm' or 'player'
+  name      String   // Display name
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Campaign and manuscript management
+model Campaign {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  chapters    Chapter[]
+  sessions    Session[]
+}
+
+model Chapter {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  title      String
+  content    String   // Markdown content
+  order      Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Session planning and notes
+model Session {
+  id            String         @id @default(cuid())
+  campaignId    String?
+  campaign      Campaign?      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  sessionNumber Int
+  title         String
+  date          DateTime
+  notes         String?        // Session notes in markdown
+  summary       String?        // Post-session summary
+  status        String         @default("prep") // 'prep' or 'active'
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  combats       Combat[]
+  plannerItems  PlannerItem[]
+  timeline      TimelineEvent[]
+}
+
+// Timeline events for session preparation
+model TimelineEvent {
+  id          String      @id @default(cuid())
+  sessionId   String
+  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  order       Int
+  title       String
+  description String?     // Key details for this event
+  soundUrls   String?     // JSON array of sound URLs to play
+  imageUrls   String?     // JSON array of image URLs
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  notes       EventNote[] // Notes added during the session
+}
+
+// Notes added to timeline events during active session
+model EventNote {
+  id              String        @id @default(cuid())
+  timelineEventId String
+  timelineEvent   TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
+  content         String        // The note text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+// Session planner items (images, videos, assets to show)
+model PlannerItem {
+  id        String   @id @default(cuid())
+  sessionId String?
+  session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  type      String   // 'image', 'video', 'url', 'note'
+  title     String
+  content   String   // URL or text content
+  order     Int
+  shown     Boolean  @default(false) // Track if shown to players
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Combat tracking
+model Combat {
+  id          String           @id @default(cuid())
+  sessionId   String?
+  session     Session?         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  name        String
+  phase       String           @default("setup") // 'setup' or 'active'
+  round       Int              @default(1)
+  isActive    Boolean          @default(true)
+  outcome     String?          // Victory, defeat, fled, etc.
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  initiatives Initiative[]
+}
+
+// Initiative tracking for combat
+model Initiative {
+  id            String   @id @default(cuid())
+  combatId      String
+  combat        Combat   @relation(fields: [combatId], references: [id], onDelete: Cascade)
+  name          String
+  initiativeRoll Int
+  armorClass    Int?
+  maxHp         Int?
+  damageTaken   Int      @default(0) // Track damage instead of current HP
+  isPlayer      Boolean  @default(false)
+  isActive      Boolean  @default(true) // Still in combat
+  conditions    String?  // JSON array of conditions
+  notes         String?
+  order         Int      // Derived from initiative roll
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Soundboard sounds
+model Sound {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   // 'ambience', 'music', 'sfx'
+  url       String   // File path or URL
+  duration  Int?     // Duration in seconds
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Media Library - Audio Assets
+model AudioAsset {
+  id               String   @id @default(cuid())
+  name             String
+  url              String   // URL to audio file or YouTube video
+  sourceType       String   @default("file") // 'youtube' or 'file'
+  tags             String?  // JSON array of tags
+  category         String   // 'ambience', 'music', 'sfx', 'voice'
+  duration         Int?     // Duration in seconds
+  description      String?
+  soundboardSlot   Int?     // Slot position in soundboard (0-24 for 5x5 grid), null if not on soundboard
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// Media Library - Image Assets
+model ImageAsset {
+  id          String   @id @default(cuid())
+  name        String
+  url         String   // URL to image file
+  tags        String?  // JSON array of tags
+  category    String   // 'map', 'character', 'item', 'location', 'misc'
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Quick notes/reminders
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   // Markdown
+  category  String?  // 'npc', 'location', 'quest', 'item', 'general'
+  tags      String?  // JSON array of tags
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Player characters (persistent party)
+model Player {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  maxHp         Int?
+  armorClass    Int?
+  isActive      Boolean  @default(true) // Currently in party
+  order         Int      @default(0) // Display order
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
