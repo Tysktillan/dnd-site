@@ -14,14 +14,14 @@ export async function POST(
         name: body.name,
         initiativeRoll: body.initiativeRoll,
         armorClass: body.armorClass,
-        currentHp: body.currentHp,
+        damageTaken: body.damageTaken || 0,
         maxHp: body.maxHp,
         isPlayer: body.isPlayer,
         order: body.initiativeRoll,
       }
     })
     return NextResponse.json(initiative)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to create initiative' }, { status: 500 })
   }
 }
