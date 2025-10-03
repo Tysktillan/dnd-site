@@ -64,7 +64,15 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     fetchActiveCombat()
-  }, [])
+    // Poll for updates every 2 seconds when combat is active
+    const interval = setInterval(() => {
+      if (combat) {
+        fetchActiveCombat()
+      }
+    }, 2000)
+
+    return () => clearInterval(interval)
+  }, [combat])
 
   useEffect(() => {
     if (isDragging) {
@@ -93,22 +101,28 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     try {
       const response = await fetch('/api/combat')
       const data = await response.json()
-      console.log('Fetched combats:', data)
-      const activeCombat = data.find((c: Combat) => c.phase === 'active')
-      console.log('Active combat found:', activeCombat)
+
+      // Find combat that is both active phase AND isActive flag
+      const activeCombat = data.find((c: Combat) => c.phase === 'active' && c.isActive !== false)
 
       if (activeCombat) {
         // Fetch initiatives for this combat
         const initResponse = await fetch(`/api/combat/${activeCombat.id}/initiative`)
         const initiatives = await initResponse.json()
-        console.log('Initiatives:', initiatives)
-        setCombat({ ...activeCombat, initiatives })
+
+        // Only update if we have initiatives or this is a new combat
+        if (initiatives && initiatives.length > 0) {
+          setCombat({ ...activeCombat, initiatives })
+        } else if (!combat) {
+          // First time setting combat, even if no initiatives yet
+          setCombat({ ...activeCombat, initiatives: [] })
+        }
       } else {
-        console.log('No active combat found, setting combat to null')
         setCombat(null)
       }
     } catch (error) {
       console.error('Error fetching combat:', error)
+      setCombat(null)
     }
   }
 
@@ -168,9 +182,15 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
         })
       )
 
+      // Wait for all initiatives to be created
       await Promise.all([...playerPromises, ...enemyPromises])
 
-      console.log('Combat and initiatives created, combat ID:', newCombat.id)
+      // Fetch initiatives immediately after creation
+      const initResponse = await fetch(`/api/combat/${newCombat.id}/initiative`)
+      const initiatives = await initResponse.json()
+
+      // Set the combat state directly with the new data
+      setCombat({ ...newCombat, initiatives })
 
       // Reset form
       setCombatSetup({
@@ -179,12 +199,6 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
         enemies: []
       })
       setShowNewCombat(false)
-
-      // Wait for the database to update, then fetch
-      // Use a longer delay and await the fetch
-      await new Promise(resolve => setTimeout(resolve, 300))
-      await fetchActiveCombat()
-      console.log('Combat state after fetch:', combat)
     } catch (error) {
       console.error('Error creating combat:', error)
       alert('Failed to create combat. Please try again.')
