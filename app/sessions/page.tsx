@@ -330,22 +330,34 @@ export default function SessionsPage() {
     }
   }
 
-  const addTimelineEvent = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!activeSession) return
+  const addTimelineEvent = async () => {
+    if (!activeSession || !eventFormData.title.trim()) return
 
     const order = activeSession.timeline?.length || 0
+
+    // Convert key details array to description string (one per line, filter empty)
+    const description = keyDetails.filter(d => d.trim()).join('\n')
+
+    // Convert asset IDs to JSON strings
+    const soundUrls = selectedAudioIds.length > 0 ? JSON.stringify(selectedAudioIds) : ''
+    const imageUrls = selectedImageIds.length > 0 ? JSON.stringify(selectedImageIds) : ''
 
     await fetch(`/api/sessions/${activeSession.id}/timeline`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ...eventFormData,
+        title: eventFormData.title,
+        description,
+        soundUrls,
+        imageUrls,
         order,
       }),
     })
 
     setEventFormData({ title: '', description: '', soundUrls: '', imageUrls: '' })
+    setKeyDetails(['', '', ''])
+    setSelectedAudioIds([])
+    setSelectedImageIds([])
     setIsEventDialogOpen(false)
     loadSessionWithTimeline(activeSession.id)
   }
@@ -453,46 +465,100 @@ export default function SessionsPage() {
                   Add Event
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-800 text-white border-slate-700">
+              <DialogContent className="bg-stone-950/95 backdrop-blur-xl text-white border-stone-900">
                 <DialogHeader>
                   <DialogTitle>Add Timeline Event</DialogTitle>
-                  <DialogDescription className="text-slate-400">
+                  <DialogDescription className="text-stone-500">
                     Add a new event to the session timeline
                   </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={addTimelineEvent} className="space-y-4">
+                <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Title</label>
+                    <label className="text-xs text-stone-400 mb-1 block">Event Title</label>
                     <Input
                       value={eventFormData.title}
                       onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
                       className="bg-black/50 border-stone-900"
-                      placeholder="Vampire encounter"
-                      required
+                      placeholder="e.g., Meeting with Fiona Wachter"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Description / Key Details</label>
-                    <Textarea
-                      value={eventFormData.description}
-                      onChange={(e) => setEventFormData({ ...eventFormData, description: e.target.value })}
-                      className="bg-slate-900 border-slate-700 min-h-[100px]"
-                      placeholder="Important notes, NPC info, key items..."
-                    />
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs text-stone-400 block">Key Details</label>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={addKeyDetail}
+                        className="h-6 text-xs"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add Detail
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {keyDetails.map((detail, index) => (
+                        <div key={index} className="flex gap-2">
+                          <span className="text-stone-500 text-sm pt-2">•</span>
+                          <Input
+                            value={detail}
+                            onChange={(e) => updateKeyDetail(index, e.target.value)}
+                            className="bg-black/50 border-stone-900 flex-1"
+                            placeholder="e.g., Lady Wachter wants the party's help"
+                          />
+                          {keyDetails.length > 1 && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeKeyDetail(index)}
+                              className="h-9 w-9 p-0 hover:bg-red-900/20"
+                            >
+                              <X className="h-4 w-4 text-red-400" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Sound URLs (JSON array)</label>
-                    <Input
-                      value={eventFormData.soundUrls}
-                      onChange={(e) => setEventFormData({ ...eventFormData, soundUrls: e.target.value })}
-                      className="bg-black/50 border-stone-900"
-                      placeholder='["url1.mp3", "url2.mp3"]'
-                    />
+                    <label className="text-xs text-stone-400 mb-1 block">Audio Assets (optional)</label>
+                    <Button
+                      type="button"
+                      onClick={() => setIsAudioPickerOpen(true)}
+                      variant="outline"
+                      className="w-full justify-start bg-black/50 border-stone-900"
+                    >
+                      <Music className="h-4 w-4 mr-2" />
+                      {selectedAudioIds.length > 0
+                        ? `${selectedAudioIds.length} audio asset${selectedAudioIds.length > 1 ? 's' : ''} selected`
+                        : 'Select Audio Assets'}
+                    </Button>
                   </div>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-red-950 via-red-900 to-red-950 hover:from-red-900 hover:via-red-800 hover:to-red-900">
+                  <div>
+                    <label className="text-xs text-stone-400 mb-1 block">Image Assets (optional)</label>
+                    <Button
+                      type="button"
+                      onClick={() => setIsImagePickerOpen(true)}
+                      variant="outline"
+                      className="w-full justify-start bg-black/50 border-stone-900"
+                    >
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      {selectedImageIds.length > 0
+                        ? `${selectedImageIds.length} image${selectedImageIds.length > 1 ? 's' : ''} selected`
+                        : 'Select Images'}
+                    </Button>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={addTimelineEvent}
+                    className="w-full bg-gradient-to-r from-red-950 via-red-900 to-red-950 hover:from-red-900 hover:via-red-800 hover:to-red-900"
+                    disabled={!eventFormData.title.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
                     Add Event
                   </Button>
-                </form>
+                </div>
               </DialogContent>
             </Dialog>
             <Button onClick={endSession} variant="outline" className="border-red-600 text-red-400 hover:bg-red-900/20">
