@@ -11,7 +11,7 @@ export async function GET(
       where: { id }
     })
     return NextResponse.json(session)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch session' }, { status: 500 })
   }
 }
@@ -25,7 +25,14 @@ export async function PUT(
     const body = await request.json()
 
     // Build update data object with only provided fields
-    const updateData: any = {}
+    const updateData: {
+      sessionNumber?: number
+      title?: string
+      date?: Date
+      notes?: string
+      summary?: string
+      status?: string
+    } = {}
     if (body.sessionNumber !== undefined) updateData.sessionNumber = body.sessionNumber
     if (body.title !== undefined) updateData.title = body.title
     if (body.date !== undefined) updateData.date = new Date(body.date)
@@ -54,7 +61,7 @@ export async function DELETE(
       where: { id }
     })
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to delete session' }, { status: 500 })
   }
 }
