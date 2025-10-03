@@ -23,6 +23,7 @@ type Combat = {
   name: string
   round: number
   phase: string
+  isActive: boolean
   initiatives: Initiative[]
 }
 
