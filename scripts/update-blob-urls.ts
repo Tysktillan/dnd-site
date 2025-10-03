@@ -22,15 +22,25 @@ async function updateBlobUrls() {
     // Construct old URL
     const oldUrl = `/uploads/${type}/${filename}`
 
-    // Update database
-    const result = await prisma.media.updateMany({
-      where: { url: oldUrl },
-      data: { url: blob.url }
-    })
-
-    if (result.count > 0) {
-      console.log(`✓ Updated ${filename}: ${oldUrl} → ${blob.url}`)
-      updatedCount += result.count
+    // Update database based on type
+    if (type === 'audio') {
+      const result = await prisma.audioAsset.updateMany({
+        where: { url: oldUrl },
+        data: { url: blob.url }
+      })
+      if (result.count > 0) {
+        console.log(`✓ Updated audio ${filename}: ${oldUrl} → ${blob.url}`)
+        updatedCount += result.count
+      }
+    } else if (type === 'images') {
+      const result = await prisma.imageAsset.updateMany({
+        where: { url: oldUrl },
+        data: { url: blob.url }
+      })
+      if (result.count > 0) {
+        console.log(`✓ Updated image ${filename}: ${oldUrl} → ${blob.url}`)
+        updatedCount += result.count
+      }
     }
   }
 
