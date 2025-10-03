@@ -9,53 +9,56 @@ export default function Home() {
       description: "Manage your campaign manuscripts and chapters",
       icon: BookOpen,
       href: "/campaigns",
-      color: "text-purple-400"
+      color: "text-red-400"
     },
     {
       title: "Sessions",
       description: "Plan and track your game sessions",
       icon: Calendar,
       href: "/sessions",
-      color: "text-blue-400"
+      color: "text-red-300"
     },
     {
       title: "Combat Tracker",
       description: "Track initiative and combat encounters",
       icon: Swords,
       href: "/combat",
-      color: "text-red-400"
+      color: "text-red-500"
     },
     {
       title: "Session Planner",
       description: "Organize assets, images, and videos for sessions",
       icon: FileText,
       href: "/planner",
-      color: "text-green-400"
+      color: "text-stone-300"
     },
     {
       title: "Notes",
       description: "Quick notes for NPCs, locations, and quests",
       icon: StickyNote,
       href: "/notes",
-      color: "text-yellow-400"
+      color: "text-stone-400"
     },
     {
       title: "Soundboard",
       description: "Ambient sounds and music for immersion",
       icon: Music,
       href: "/soundboard",
-      color: "text-pink-400"
+      color: "text-red-400"
     },
   ];
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-2">
-          Welcome, Dungeon Master
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="mb-12 text-center">
+        <h1 className="text-6xl font-black tracking-tighter mb-4">
+          <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">
+            Welcome to Barovia
+          </span>
         </h1>
-        <p className="text-slate-400">
-          Your complete toolkit for running epic D&D sessions
+        <div className="h-px w-48 mx-auto bg-gradient-to-r from-transparent via-red-900/50 to-transparent mb-4"></div>
+        <p className="text-stone-500 text-sm tracking-[0.3em] uppercase">
+          Dungeon Master Command Center
         </p>
       </div>
 
@@ -64,16 +67,19 @@ export default function Home() {
           const Icon = feature.icon;
           return (
             <Link key={feature.title} href={feature.href}>
-              <Card className="p-6 bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors cursor-pointer h-full">
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-lg bg-slate-900 ${feature.color}`}>
+              <Card className="group relative p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900 hover:border-red-900/50 transition-all duration-300 cursor-pointer h-full overflow-hidden">
+                {/* Hover glow effect */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-red-900/0 via-red-900/30 to-red-900/0 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+
+                <div className="relative flex items-start gap-4">
+                  <div className={`p-3 rounded-xl bg-black/50 border border-stone-900 ${feature.color} group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-1">
+                    <h3 className="text-lg font-semibold text-stone-100 mb-1 group-hover:text-white transition-colors">
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-stone-500 group-hover:text-stone-400 transition-colors">
                       {feature.description}
                     </p>
                   </div>
@@ -84,15 +90,35 @@ export default function Home() {
         })}
       </div>
 
-      <div className="mt-8 p-6 bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-800/30 rounded-lg">
-        <h2 className="text-xl font-semibold text-white mb-2">Quick Start</h2>
-        <ul className="text-slate-300 space-y-2 text-sm">
-          <li>• Create a campaign to organize your adventure</li>
-          <li>• Add sessions to plan and track your games</li>
-          <li>• Use the combat tracker during battles</li>
-          <li>• Take notes on NPCs, locations, and story beats</li>
-          <li>• Prepare media in the session planner to show your players</li>
-        </ul>
+      <div className="mt-12 relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-red-900/20 to-transparent rounded-2xl blur"></div>
+        <div className="relative p-8 bg-stone-950/90 backdrop-blur-xl border border-red-950/30 rounded-2xl">
+          <h2 className="text-2xl font-bold text-stone-200 mb-4 flex items-center gap-2">
+            <span className="text-red-500">⚔</span> Getting Started
+          </h2>
+          <ul className="text-stone-400 space-y-3 text-sm leading-relaxed">
+            <li className="flex items-start gap-3">
+              <span className="text-red-800 mt-1">•</span>
+              <span>Create a campaign to chronicle your descent into darkness</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-red-800 mt-1">•</span>
+              <span>Plan sessions with timeline events and key encounters</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-red-800 mt-1">•</span>
+              <span>Track combat initiatives and manage deadly encounters</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-red-800 mt-1">•</span>
+              <span>Document NPCs, locations, and the secrets they hold</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="text-red-800 mt-1">•</span>
+              <span>Set the mood with atmospheric soundscapes and music</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );
