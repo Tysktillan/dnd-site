@@ -565,7 +565,7 @@ export default function SessionsPage() {
                               {hasNotes && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-purple-900/30 text-purple-400 flex items-center gap-1">
                                   <StickyNote className="h-3 w-3" />
-                                  {event.notes.length} note{event.notes.length > 1 ? 's' : ''}
+                                  {event.notes?.length} note{(event.notes?.length ?? 0) > 1 ? 's' : ''}
                                 </span>
                               )}
                             </div>
