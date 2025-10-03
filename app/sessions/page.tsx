@@ -443,12 +443,12 @@ export default function SessionsPage() {
             <h1 className="text-3xl font-bold text-white mb-2">
               🎲 Session {activeSession.sessionNumber}: {activeSession.title}
             </h1>
-            <p className="text-slate-400">Live session in progress</p>
+            <p className="text-stone-500">Session in progress</p>
           </div>
           <div className="flex gap-2">
             <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button className="bg-gradient-to-r from-red-950 via-red-900 to-red-950 hover:from-red-900 hover:via-red-800 hover:to-red-900 shadow-lg shadow-red-950/30">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Event
                 </Button>
@@ -466,7 +466,7 @@ export default function SessionsPage() {
                     <Input
                       value={eventFormData.title}
                       onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
-                      className="bg-slate-900 border-slate-700"
+                      className="bg-black/50 border-stone-900"
                       placeholder="Vampire encounter"
                       required
                     />
@@ -485,11 +485,11 @@ export default function SessionsPage() {
                     <Input
                       value={eventFormData.soundUrls}
                       onChange={(e) => setEventFormData({ ...eventFormData, soundUrls: e.target.value })}
-                      className="bg-slate-900 border-slate-700"
+                      className="bg-black/50 border-stone-900"
                       placeholder='["url1.mp3", "url2.mp3"]'
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
+                  <Button type="submit" className="w-full bg-gradient-to-r from-red-950 via-red-900 to-red-950 hover:from-red-900 hover:via-red-800 hover:to-red-900">
                     Add Event
                   </Button>
                 </form>
@@ -513,12 +513,12 @@ export default function SessionsPage() {
               return (
                 <Card
                   key={event.id}
-                  className={`border transition-all ${
+                  className={`border transition-all rounded-xl ${
                     event.completed
-                      ? 'bg-slate-900/50 border-slate-800'
+                      ? 'bg-stone-950/50 border-stone-900'
                       : isExpanded
-                      ? 'bg-slate-800 border-purple-600 shadow-lg shadow-purple-900/20'
-                      : 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                      ? 'bg-stone-950/90 backdrop-blur-xl border-red-900/50 shadow-lg shadow-red-950/20'
+                      : 'bg-stone-950/90 backdrop-blur-xl border-stone-900 hover:border-stone-800'
                   }`}
                 >
                   {/* Event Header */}
@@ -531,7 +531,7 @@ export default function SessionsPage() {
                         {event.completed ? (
                           <CheckCircle2 className="h-6 w-6 text-green-400" />
                         ) : (
-                          <Circle className="h-6 w-6 text-slate-500 hover:text-slate-400" />
+                          <Circle className="h-6 w-6 text-stone-700 hover:text-stone-600" />
                         )}
                       </button>
 
@@ -542,10 +542,10 @@ export default function SessionsPage() {
                             className="flex-1 text-left"
                           >
                             <div className="flex items-center gap-2">
-                              <h3 className={`text-lg font-semibold ${event.completed ? 'text-slate-500 line-through' : 'text-white'}`}>
+                              <h3 className={`text-lg font-semibold ${event.completed ? 'text-stone-600 line-through' : 'text-stone-100'}`}>
                                 {index + 1}. {event.title}
                               </h3>
-                              <ChevronRight className={`h-5 w-5 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              <ChevronRight className={`h-5 w-5 text-stone-500 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                             </div>
 
                             {/* Asset badges */}
@@ -563,7 +563,7 @@ export default function SessionsPage() {
                                 </span>
                               )}
                               {hasNotes && (
-                                <span className="text-xs px-2 py-1 rounded-full bg-purple-900/30 text-purple-400 flex items-center gap-1">
+                                <span className="text-xs px-2 py-1 rounded-full bg-red-950/30 text-red-400 border border-red-900/30 flex items-center gap-1">
                                   <StickyNote className="h-3 w-3" />
                                   {event.notes?.length} note{(event.notes?.length ?? 0) > 1 ? 's' : ''}
                                 </span>
@@ -840,7 +840,7 @@ export default function SessionsPage() {
                           <Input
                             value={eventFormData.title}
                             onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
-                            className="bg-slate-900 border-slate-700"
+                            className="bg-black/50 border-stone-900"
                             placeholder="e.g., Meeting with Fiona Wachter"
                           />
                         </div>
