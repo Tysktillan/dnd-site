@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
@@ -14,13 +15,20 @@ import {
   Images,
   LogOut,
   Shield,
-  User
+  User as UserIcon,
+  Users,
+  Sparkles,
+  Video,
+  Newspaper
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-const navigation = [
+const dmNavigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Players', href: '/players', icon: Users },
+  { name: 'Magical Items', href: '/items', icon: Sparkles },
+  { name: 'News', href: '/news', icon: Newspaper },
   { name: 'Campaigns', href: '/campaigns', icon: BookOpen },
   { name: 'Sessions', href: '/sessions', icon: Calendar },
   { name: 'Media Library', href: '/media', icon: Images },
@@ -30,13 +38,32 @@ const navigation = [
   { name: 'Soundboard', href: '/soundboard', icon: Music },
 ]
 
+const playerNavigation = [
+  { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Character', href: '/character', icon: UserIcon },
+]
+
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const [character, setCharacter] = useState<any>(null)
+
+  useEffect(() => {
+    // Fetch player character if user is a player
+    if (session?.user?.role === 'player') {
+      fetch('/api/character')
+        .then(res => res.ok ? res.json() : null)
+        .then(data => setCharacter(data))
+        .catch(() => setCharacter(null))
+    }
+  }, [session])
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' })
   }
+
+  // Determine navigation based on user role
+  const navigation = session?.user?.role === 'dm' ? dmNavigation : playerNavigation
 
   return (
     <div className="flex h-full w-64 flex-col border-r border-stone-900 bg-stone-950/90 backdrop-blur-xl text-stone-100 relative">
@@ -56,18 +83,33 @@ export function Sidebar() {
         <div className="border-b border-stone-900 p-4">
           <div className="flex items-center gap-3">
             <div className={cn(
-              "w-10 h-10 rounded-full flex items-center justify-center border",
+              "w-10 h-10 rounded-full flex items-center justify-center border overflow-hidden",
               session.user.role === 'dm' ? 'bg-red-950/30 border-red-900/50' : 'bg-stone-900/30 border-stone-800/50'
             )}>
               {session.user.role === 'dm' ? (
                 <Shield className="h-5 w-5 text-red-400" />
+              ) : character?.backgroundUrl ? (
+                <img
+                  src={character.backgroundUrl}
+                  alt="Character"
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <User className="h-5 w-5 text-stone-400" />
+                <UserIcon className="h-5 w-5 text-stone-400" />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-stone-100 truncate">{session.user.name}</p>
-              <p className="text-xs text-stone-500 capitalize tracking-wider">{session.user.role}</p>
+              {session.user.role === 'player' && character ? (
+                <p className="text-xs text-stone-500">
+                  {character.className || 'Unknown'} {character.level}
+                  {character.className2 && character.level2 > 0 && (
+                    <> / {character.className2} {character.level2}</>
+                  )}
+                </p>
+              ) : (
+                <p className="text-xs text-stone-500 capitalize tracking-wider">{session.user.role}</p>
+              )}
             </div>
           </div>
         </div>
@@ -102,6 +144,21 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-stone-900 p-4 space-y-3">
+        <Link
+          href="/legends-of-barovia"
+          className={cn(
+            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all group relative',
+            pathname === '/legends-of-barovia'
+              ? 'bg-gradient-to-r from-purple-950 via-purple-900 to-purple-950 text-stone-100 shadow-lg shadow-purple-950/30'
+              : 'text-stone-400 hover:bg-stone-900/50 hover:text-stone-200'
+          )}
+        >
+          <Video className={cn(
+            "h-5 w-5 transition-transform group-hover:scale-110",
+            pathname === '/legends-of-barovia' ? "text-purple-300" : ""
+          )} />
+          Legends of Barovia
+        </Link>
         <Button
           onClick={handleLogout}
           variant="ghost"

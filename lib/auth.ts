@@ -15,8 +15,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username as string },
+        // Find user with case-insensitive username search
+        const user = await prisma.user.findFirst({
+          where: {
+            username: {
+              equals: credentials.username as string,
+              mode: 'insensitive'
+            }
+          },
         })
 
         if (!user) {
@@ -57,6 +63,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // DM-only routes
       const dmOnlyRoutes = [
+        '/players',
+        '/items',
         '/campaigns',
         '/sessions',
         '/media',

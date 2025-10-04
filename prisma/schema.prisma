@@ -18,6 +18,8 @@ model User {
   password  String   // Hashed password
   role      String   @default("player") // 'dm' or 'player'
   name      String   // Display name
+  playerId  String?  @unique // Link to Player character
+  player    Player?  @relation(fields: [playerId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -186,14 +188,66 @@ model Note {
   updatedAt DateTime @updatedAt
 }
 
+// Newsletter/News posts for players
+model NewsPost {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   // Markdown content
+  excerpt     String?  // Short summary for preview
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Magical Items for equipment
+model MagicalItem {
+  id          String   @id @default(cuid())
+  name        String
+  slot        String   // 'helm', 'cloak', 'chest', 'boots', 'gloves', 'mainHand', 'offHand', 'necklace', 'ring'
+  rarity      String   @default("common") // 'common', 'uncommon', 'rare', 'very rare', 'legendary', 'artifact'
+  stats       String?  // Stat bonuses (e.g., "+2 AC", "+1d6 Fire Damage")
+  description String?  // Item description and properties
+  imageUrl    String?  // Custom icon/image URL
+  isActive    Boolean  @default(true) // Available for players to equip
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // Player characters (persistent party)
 model Player {
   id            String   @id @default(cuid())
   name          String   @unique
+  className     String?  // Character class (e.g., 'Fighter', 'Wizard')
+  className2    String?  // Second class for multiclassing
+  race          String?  // Character race (e.g., 'Human', 'Elf')
+  level         Int      @default(1)
+  level2        Int      @default(0)  // Levels in second class
+  currentHp     Int?
   maxHp         Int?
   armorClass    Int?
+  proficiency   Int      @default(2) // Proficiency bonus
+  speed         Int      @default(30) // Movement speed
+  inspiration   Boolean  @default(false)
+  // Ability Scores
+  strength      Int      @default(10)
+  dexterity     Int      @default(10)
+  constitution  Int      @default(10)
+  intelligence  Int      @default(10)
+  wisdom        Int      @default(10)
+  charisma      Int      @default(10)
+  // Additional Info
+  background    String?
+  alignment     String?
+  equipment     String?  // JSON array of equipment items
+  features      String?  // JSON array of class features & traits
+  spells        String?  // JSON array of spells
+  notes         String?  // Player notes
+  avatarUrl     String?  // Character portrait
+  backgroundUrl String?  // Equipment screen background image
   isActive      Boolean  @default(true) // Currently in party
   order         Int      @default(0) // Display order
+  user          User?    // Link to user account
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

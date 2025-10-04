@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,7 @@ import { SoundboardPanel } from './SoundboardPanel'
 import { QuickCombat } from './QuickCombat'
 
 export function QuickControls() {
+  const { data: session } = useSession()
   const [isExpanded, setIsExpanded] = useState(false)
   const [showNoteDialog, setShowNoteDialog] = useState(false)
   const [showSoundboard, setShowSoundboard] = useState(false)
@@ -40,6 +42,11 @@ export function QuickControls() {
     content: '',
     category: 'general',
   })
+
+  // Only show for DM role
+  if (!session?.user || session.user.role !== 'dm') {
+    return null
+  }
 
   const handleQuickNote = async (e: React.FormEvent) => {
     e.preventDefault()

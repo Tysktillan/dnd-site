@@ -1,0 +1,94 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Get the user's player character
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { player: true }
+    });
+
+    if (!user?.player) {
+      return NextResponse.json({ error: "No character found" }, { status: 404 });
+    }
+
+    return NextResponse.json(user.player);
+  } catch (error) {
+    console.error("Error fetching character:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch character" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const data = await request.json();
+
+    // Get the user's player character
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { playerId: true }
+    });
+
+    if (!user?.playerId) {
+      return NextResponse.json({ error: "No character found" }, { status: 404 });
+    }
+
+    // Update the character
+    const updatedCharacter = await prisma.player.update({
+      where: { id: user.playerId },
+      data: {
+        name: data.name,
+        className: data.className,
+        className2: data.className2,
+        race: data.race,
+        level: data.level,
+        level2: data.level2,
+        currentHp: data.currentHp,
+        maxHp: data.maxHp,
+        armorClass: data.armorClass,
+        proficiency: data.proficiency,
+        speed: data.speed,
+        inspiration: data.inspiration,
+        strength: data.strength,
+        dexterity: data.dexterity,
+        constitution: data.constitution,
+        intelligence: data.intelligence,
+        wisdom: data.wisdom,
+        charisma: data.charisma,
+        background: data.background,
+        alignment: data.alignment,
+        equipment: data.equipment,
+        features: data.features,
+        spells: data.spells,
+        notes: data.notes,
+        avatarUrl: data.avatarUrl,
+        backgroundUrl: data.backgroundUrl,
+      }
+    });
+
+    return NextResponse.json(updatedCharacter);
+  } catch (error) {
+    console.error("Error updating character:", error);
+    return NextResponse.json(
+      { error: "Failed to update character" },
+      { status: 500 }
+    );
+  }
+}
