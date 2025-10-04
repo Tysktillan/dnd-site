@@ -110,7 +110,7 @@ export function Sidebar() {
               {session.user.role === 'player' && character ? (
                 <p className="text-xs text-stone-500">
                   {character.className || 'Unknown'} {character.level}
-                  {character.className2 && character.level2 > 0 && (
+                  {character.className2 && character.level2 && character.level2 > 0 && (
                     <> / {character.className2} {character.level2}</>
                   )}
                 </p>
