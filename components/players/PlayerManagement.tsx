@@ -100,8 +100,8 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
   };
 
   // Get unlinked characters
-  const linkedCharacterIds = players.map(p => p.playerId).filter(Boolean);
-  const unlinkedCharacters = allCharacters.filter(c => !linkedCharacterIds.includes(c.id));
+  const linkedCharacterIds = initialPlayers.map(p => p.playerId).filter(Boolean);
+  const unlinkedCharacters = initialCharacters.filter(c => !linkedCharacterIds.includes(c.id));
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -115,7 +115,7 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
       </div>
 
       <div className="space-y-4">
-        {players.map((player) => (
+        {initialPlayers.map((player) => (
           <Card key={player.id} className="p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -275,7 +275,7 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
         ))}
       </div>
 
-      {players.length === 0 && (
+      {initialPlayers.length === 0 && (
         <Card className="p-12 bg-stone-950/90 backdrop-blur-xl border-stone-900 text-center">
           <p className="text-stone-400">No player accounts found</p>
           <p className="text-sm text-stone-600 mt-2">Create player accounts to manage their characters</p>
