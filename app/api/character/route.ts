@@ -12,8 +12,7 @@ export async function GET(request: NextRequest) {
 
     // Get the user's player character
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { playerId: true }
+      where: { id: session.user.id }
     });
 
     if (!user?.playerId) {
@@ -50,8 +49,7 @@ export async function PATCH(request: NextRequest) {
 
     // Get the user's player character
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { playerId: true }
+      where: { id: session.user.id }
     });
 
     if (!user?.playerId) {
