@@ -13,14 +13,22 @@ export async function GET(request: NextRequest) {
     // Get the user's player character
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: { player: true }
+      select: { playerId: true }
     });
 
-    if (!user?.player) {
+    if (!user?.playerId) {
       return NextResponse.json({ error: "No character found" }, { status: 404 });
     }
 
-    return NextResponse.json(user.player);
+    const player = await prisma.player.findUnique({
+      where: { id: user.playerId }
+    });
+
+    if (!player) {
+      return NextResponse.json({ error: "No character found" }, { status: 404 });
+    }
+
+    return NextResponse.json(player);
   } catch (error) {
     console.error("Error fetching character:", error);
     return NextResponse.json(
