@@ -18,7 +18,7 @@ interface PlayerManagementProps {
 
 export default function PlayerManagement({ players: initialPlayers, allCharacters: initialCharacters }: PlayerManagementProps) {
   const router = useRouter();
-  const [creatingCharacter, setCreatingCharacter] = useState(false);
+  const [creatingCharacter, setCreatingCharacter] = useState<string | false>(false);
   const [newCharacter, setNewCharacter] = useState({
     name: '',
     className: '',
