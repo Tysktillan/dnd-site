@@ -10,12 +10,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId, playerId } = await request.json();
+    const { userId, playerId, isSecondary } = await request.json();
 
     // Link the character to the user
     await prisma.user.update({
       where: { id: userId },
-      data: { playerId }
+      data: isSecondary ? { secondaryPlayerId: playerId } : { playerId }
     });
 
     return NextResponse.json({ success: true });
@@ -36,12 +36,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { userId } = await request.json();
+    const { userId, isSecondary } = await request.json();
 
     // Unlink the character from the user
     await prisma.user.update({
       where: { id: userId },
-      data: { playerId: null }
+      data: isSecondary ? { secondaryPlayerId: null } : { playerId: null }
     });
 
     return NextResponse.json({ success: true });

@@ -10,10 +10,13 @@ export default async function CharacterPage() {
     redirect('/login');
   }
 
-  // Fetch user with player character
+  // Fetch user with both player characters
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { player: true }
+    include: {
+      player: true,
+      secondaryPlayer: true
+    }
   });
 
   if (!user?.player) {
@@ -27,5 +30,5 @@ export default async function CharacterPage() {
     );
   }
 
-  return <CharacterSheet character={user.player} />;
+  return <CharacterSheet character={user.player} secondaryCharacter={user.secondaryPlayer} />;
 }

@@ -9,15 +9,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
-  role      String   @default("player")
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  playerId  String?  @unique
-  player    Player?  @relation(fields: [playerId], references: [id])
+  id                String   @id @default(cuid())
+  username          String   @unique
+  password          String
+  role              String   @default("player")
+  name              String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  playerId          String?  @unique
+  player            Player?  @relation("PrimaryPlayer", fields: [playerId], references: [id])
+  secondaryPlayerId String?  @unique
+  secondaryPlayer   Player?  @relation("SecondaryPlayer", fields: [secondaryPlayerId], references: [id])
 }
 
 model Campaign {
@@ -229,5 +231,6 @@ model Player {
   backgroundUrl String?
   className2    String?
   level2        Int      @default(0)
-  user          User?
+  primaryUser   User?    @relation("PrimaryPlayer")
+  secondaryUser User?    @relation("SecondaryPlayer")
 }

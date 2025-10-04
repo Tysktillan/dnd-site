@@ -47,18 +47,24 @@ export async function PATCH(request: NextRequest) {
 
     const data = await request.json();
 
-    // Get the user's player character
+    // Get the user's player characters
     const user = await prisma.user.findUnique({
       where: { id: session.user.id }
     });
 
-    if (!user?.playerId) {
+    if (!user?.playerId && !user?.secondaryPlayerId) {
       return NextResponse.json({ error: "No character found" }, { status: 404 });
+    }
+
+    // Validate that the character being updated belongs to this user
+    const characterId = data.id;
+    if (characterId !== user.playerId && characterId !== user.secondaryPlayerId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Update the character
     const updatedCharacter = await prisma.player.update({
-      where: { id: user.playerId },
+      where: { id: characterId },
       data: {
         name: data.name,
         className: data.className,

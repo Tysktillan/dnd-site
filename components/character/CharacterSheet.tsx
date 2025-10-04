@@ -24,6 +24,7 @@ import { Switch } from "@/components/ui/switch";
 
 interface CharacterSheetProps {
   character: Player;
+  secondaryCharacter?: Player | null;
 }
 
 interface Equipment {
@@ -38,10 +39,21 @@ interface Equipment {
   ring?: { name: string; description?: string; stats?: string }
 }
 
-export default function CharacterSheet({ character: initialCharacter }: CharacterSheetProps) {
+export default function CharacterSheet({ character: initialCharacter, secondaryCharacter }: CharacterSheetProps) {
+  const [activeCharacterId, setActiveCharacterId] = useState(initialCharacter.id);
   const [character, setCharacter] = useState(initialCharacter);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+
+  const handleCharacterSwitch = (characterId: string) => {
+    if (characterId === initialCharacter.id) {
+      setCharacter(initialCharacter);
+      setActiveCharacterId(initialCharacter.id);
+    } else if (secondaryCharacter && characterId === secondaryCharacter.id) {
+      setCharacter(secondaryCharacter);
+      setActiveCharacterId(secondaryCharacter.id);
+    }
+  };
 
   // Parse equipment from JSON string
   const equipment: Equipment = character.equipment ? JSON.parse(character.equipment) : {}
@@ -102,23 +114,35 @@ export default function CharacterSheet({ character: initialCharacter }: Characte
             <span>{character.race} {character.className}</span>
           </div>
         </div>
-        <Button
-          onClick={() => handleSave()}
-          disabled={isSaving}
-          className="bg-red-950 hover:bg-red-900 border border-red-900/50 text-stone-100"
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-2" />
-              Save Character
-            </>
+        <div className="flex gap-3">
+          {secondaryCharacter && (
+            <select
+              value={activeCharacterId}
+              onChange={(e) => handleCharacterSwitch(e.target.value)}
+              className="px-4 py-2 bg-stone-900 border border-stone-800 rounded-lg text-sm text-stone-200 hover:bg-stone-800 transition-colors"
+            >
+              <option value={initialCharacter.id}>{initialCharacter.name}</option>
+              <option value={secondaryCharacter.id}>{secondaryCharacter.name}</option>
+            </select>
           )}
-        </Button>
+          <Button
+            onClick={() => handleSave()}
+            disabled={isSaving}
+            className="bg-red-950 hover:bg-red-900 border border-red-900/50 text-stone-100"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Character
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {saveMessage && (

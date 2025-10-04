@@ -13,7 +13,10 @@ export default async function PlayersPage() {
   // Fetch all users with role 'player' and their linked characters
   const players = await prisma.user.findMany({
     where: { role: 'player' },
-    include: { player: true },
+    include: {
+      player: true,
+      secondaryPlayer: true
+    },
     orderBy: { name: 'asc' }
   });
 

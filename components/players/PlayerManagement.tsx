@@ -9,7 +9,10 @@ import { User, Player } from "@prisma/client";
 import { UserPlus, Trash2, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-type UserWithPlayer = User & { player: Player | null };
+type UserWithPlayer = User & {
+  player: Player | null;
+  secondaryPlayer: Player | null;
+};
 
 interface PlayerManagementProps {
   players: UserWithPlayer[];
@@ -48,12 +51,12 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
     }
   };
 
-  const handleLinkCharacter = async (userId: string, playerId: string) => {
+  const handleLinkCharacter = async (userId: string, playerId: string, isSecondary = false) => {
     try {
       const response = await fetch('/api/players/link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, playerId })
+        body: JSON.stringify({ userId, playerId, isSecondary })
       });
 
       if (!response.ok) throw new Error('Failed to link character');
@@ -65,12 +68,12 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
     }
   };
 
-  const handleUnlinkCharacter = async (userId: string) => {
+  const handleUnlinkCharacter = async (userId: string, isSecondary = false) => {
     try {
       const response = await fetch('/api/players/link', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId, isSecondary })
       });
 
       if (!response.ok) throw new Error('Failed to unlink character');
@@ -100,7 +103,10 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
   };
 
   // Get unlinked characters
-  const linkedCharacterIds = initialPlayers.map(p => p.playerId).filter(Boolean);
+  const linkedCharacterIds = [
+    ...initialPlayers.map(p => p.playerId).filter(Boolean),
+    ...initialPlayers.map(p => p.secondaryPlayerId).filter(Boolean)
+  ];
   const unlinkedCharacters = initialCharacters.filter(c => !linkedCharacterIds.includes(c.id));
 
   return (
@@ -172,7 +178,7 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-sm text-stone-500">No character assigned</p>
+                    <p className="text-sm text-stone-500">No primary character assigned</p>
 
                     {creatingCharacter === player.id ? (
                       <div className="bg-black/30 border border-stone-800 rounded-lg p-4 space-y-3">
@@ -269,6 +275,77 @@ export default function PlayerManagement({ players: initialPlayers, allCharacter
                     )}
                   </div>
                 )}
+
+                {/* Secondary Character */}
+                <div className="mt-4">
+                  <h5 className="text-sm font-semibold text-stone-400 mb-2">Secondary Character (Optional)</h5>
+                  {player.secondaryPlayer ? (
+                    <div className="bg-black/30 border border-stone-800 rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="text-lg font-semibold text-stone-200">{player.secondaryPlayer.name}</h4>
+                          <p className="text-sm text-stone-400">
+                            Level {player.secondaryPlayer.level} {player.secondaryPlayer.race} {player.secondaryPlayer.className}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleUnlinkCharacter(player.id, true)}
+                            className="text-stone-400 hover:text-stone-200"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteCharacter(player.secondaryPlayer!.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-stone-500">HP:</span>{' '}
+                          <span className="text-stone-200">{player.secondaryPlayer.currentHp ?? player.secondaryPlayer.maxHp}/{player.secondaryPlayer.maxHp}</span>
+                        </div>
+                        <div>
+                          <span className="text-stone-500">AC:</span>{' '}
+                          <span className="text-stone-200">{player.secondaryPlayer.armorClass ?? 10}</span>
+                        </div>
+                        <div>
+                          <span className="text-stone-500">Speed:</span>{' '}
+                          <span className="text-stone-200">{player.secondaryPlayer.speed} ft.</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {unlinkedCharacters.length > 0 && (
+                        <select
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              handleLinkCharacter(player.id, e.target.value, true);
+                              e.target.value = '';
+                            }
+                          }}
+                          className="w-full px-3 py-2 bg-stone-900 border border-stone-800 rounded-lg text-sm text-stone-300 hover:bg-stone-800 transition-colors"
+                        >
+                          <option value="">Link Secondary Character...</option>
+                          {unlinkedCharacters.map((char) => (
+                            <option key={char.id} value={char.id}>
+                              {char.name} (Lvl {char.level} {char.race} {char.className})
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
