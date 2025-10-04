@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,20 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Authentication
 model User {
   id        String   @id @default(cuid())
   username  String   @unique
-  password  String   // Hashed password
-  role      String   @default("player") // 'dm' or 'player'
-  name      String   // Display name
-  playerId  String?  @unique // Link to Player character
-  player    Player?  @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  password  String
+  role      String   @default("player")
+  name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  playerId  String?  @unique
+  player    Player?  @relation(fields: [playerId], references: [id])
 }
 
-// Campaign and manuscript management
 model Campaign {
   id          String    @id @default(cuid())
   name        String
@@ -38,216 +33,201 @@ model Campaign {
 model Chapter {
   id         String   @id @default(cuid())
   campaignId String
-  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   title      String
-  content    String   // Markdown content
+  content    String
   order      Int
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
-// Session planning and notes
 model Session {
-  id            String         @id @default(cuid())
+  id            String          @id @default(cuid())
   campaignId    String?
-  campaign      Campaign?      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   sessionNumber Int
   title         String
   date          DateTime
-  notes         String?        // Session notes in markdown
-  summary       String?        // Post-session summary
-  status        String         @default("prep") // 'prep' or 'active'
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  notes         String?
+  summary       String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  status        String          @default("prep")
   combats       Combat[]
   plannerItems  PlannerItem[]
+  campaign      Campaign?       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   timeline      TimelineEvent[]
 }
 
-// Timeline events for session preparation
 model TimelineEvent {
   id          String      @id @default(cuid())
   sessionId   String
-  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   order       Int
   title       String
-  description String?     // Key details for this event
-  soundUrls   String?     // JSON array of sound URLs to play
-  imageUrls   String?     // JSON array of image URLs
+  description String?
+  soundUrls   String?
   completed   Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  notes       EventNote[] // Notes added during the session
+  imageUrls   String?
+  notes       EventNote[]
+  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
-// Notes added to timeline events during active session
 model EventNote {
   id              String        @id @default(cuid())
   timelineEventId String
-  timelineEvent   TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
-  content         String        // The note text
+  content         String
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  timelineEvent   TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
 }
 
-// Session planner items (images, videos, assets to show)
 model PlannerItem {
   id        String   @id @default(cuid())
   sessionId String?
-  session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  type      String   // 'image', 'video', 'url', 'note'
+  type      String
   title     String
-  content   String   // URL or text content
+  content   String
   order     Int
-  shown     Boolean  @default(false) // Track if shown to players
+  shown     Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
-// Combat tracking
 model Combat {
-  id          String           @id @default(cuid())
+  id          String       @id @default(cuid())
   sessionId   String?
-  session     Session?         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   name        String
-  phase       String           @default("setup") // 'setup' or 'active'
-  round       Int              @default(1)
-  isActive    Boolean          @default(true)
-  outcome     String?          // Victory, defeat, fled, etc.
+  round       Int          @default(1)
+  isActive    Boolean      @default(true)
+  outcome     String?
   notes       String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  phase       String       @default("setup")
+  session     Session?     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   initiatives Initiative[]
 }
 
-// Initiative tracking for combat
 model Initiative {
-  id            String   @id @default(cuid())
-  combatId      String
-  combat        Combat   @relation(fields: [combatId], references: [id], onDelete: Cascade)
-  name          String
+  id             String   @id @default(cuid())
+  combatId       String
+  name           String
   initiativeRoll Int
-  armorClass    Int?
-  maxHp         Int?
-  damageTaken   Int      @default(0) // Track damage instead of current HP
-  isPlayer      Boolean  @default(false)
-  isActive      Boolean  @default(true) // Still in combat
-  conditions    String?  // JSON array of conditions
-  notes         String?
-  order         Int      // Derived from initiative roll
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  armorClass     Int?
+  maxHp          Int?
+  isPlayer       Boolean  @default(false)
+  isActive       Boolean  @default(true)
+  conditions     String?
+  notes          String?
+  order          Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  damageTaken    Int      @default(0)
+  combat         Combat   @relation(fields: [combatId], references: [id], onDelete: Cascade)
 }
 
-// Soundboard sounds
 model Sound {
   id        String   @id @default(cuid())
   name      String
-  category  String   // 'ambience', 'music', 'sfx'
-  url       String   // File path or URL
-  duration  Int?     // Duration in seconds
+  category  String
+  url       String
+  duration  Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Media Library - Audio Assets
 model AudioAsset {
-  id               String   @id @default(cuid())
-  name             String
-  url              String   // URL to audio file or YouTube video
-  sourceType       String   @default("file") // 'youtube' or 'file'
-  tags             String?  // JSON array of tags
-  category         String   // 'ambience', 'music', 'sfx', 'voice'
-  duration         Int?     // Duration in seconds
-  description      String?
-  soundboardSlot   Int?     // Slot position in soundboard (0-24 for 5x5 grid), null if not on soundboard
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  url            String
+  tags           String?
+  category       String
+  duration       Int?
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  sourceType     String   @default("file")
+  soundboardSlot Int?
 }
 
-// Media Library - Image Assets
 model ImageAsset {
   id          String   @id @default(cuid())
   name        String
-  url         String   // URL to image file
-  tags        String?  // JSON array of tags
-  category    String   // 'map', 'character', 'item', 'location', 'misc'
+  url         String
+  tags        String?
+  category    String
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-// Quick notes/reminders
 model Note {
   id        String   @id @default(cuid())
   title     String
-  content   String   // Markdown
-  category  String?  // 'npc', 'location', 'quest', 'item', 'general'
-  tags      String?  // JSON array of tags
+  content   String
+  category  String?
+  tags      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Newsletter/News posts for players
 model NewsPost {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  content     String   // Markdown content
-  excerpt     String?  // Short summary for preview
-  isPublished Boolean  @default(false)
+  content     String
+  excerpt     String?
+  isPublished Boolean   @default(false)
   publishedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
-// Magical Items for equipment
 model MagicalItem {
   id          String   @id @default(cuid())
   name        String
-  slot        String   // 'helm', 'cloak', 'chest', 'boots', 'gloves', 'mainHand', 'offHand', 'necklace', 'ring'
-  rarity      String   @default("common") // 'common', 'uncommon', 'rare', 'very rare', 'legendary', 'artifact'
-  stats       String?  // Stat bonuses (e.g., "+2 AC", "+1d6 Fire Damage")
-  description String?  // Item description and properties
-  imageUrl    String?  // Custom icon/image URL
-  isActive    Boolean  @default(true) // Available for players to equip
+  slot        String
+  rarity      String   @default("common")
+  stats       String?
+  description String?
+  imageUrl    String?
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-// Player characters (persistent party)
 model Player {
   id            String   @id @default(cuid())
   name          String   @unique
-  className     String?  // Character class (e.g., 'Fighter', 'Wizard')
-  className2    String?  // Second class for multiclassing
-  race          String?  // Character race (e.g., 'Human', 'Elf')
-  level         Int      @default(1)
-  level2        Int      @default(0)  // Levels in second class
-  currentHp     Int?
   maxHp         Int?
   armorClass    Int?
-  proficiency   Int      @default(2) // Proficiency bonus
-  speed         Int      @default(30) // Movement speed
-  inspiration   Boolean  @default(false)
-  // Ability Scores
-  strength      Int      @default(10)
-  dexterity     Int      @default(10)
-  constitution  Int      @default(10)
-  intelligence  Int      @default(10)
-  wisdom        Int      @default(10)
-  charisma      Int      @default(10)
-  // Additional Info
-  background    String?
-  alignment     String?
-  equipment     String?  // JSON array of equipment items
-  features      String?  // JSON array of class features & traits
-  spells        String?  // JSON array of spells
-  notes         String?  // Player notes
-  avatarUrl     String?  // Character portrait
-  backgroundUrl String?  // Equipment screen background image
-  isActive      Boolean  @default(true) // Currently in party
-  order         Int      @default(0) // Display order
-  user          User?    // Link to user account
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  alignment     String?
+  avatarUrl     String?
+  background    String?
+  charisma      Int      @default(10)
+  className     String?
+  constitution  Int      @default(10)
+  currentHp     Int?
+  dexterity     Int      @default(10)
+  equipment     String?
+  features      String?
+  inspiration   Boolean  @default(false)
+  intelligence  Int      @default(10)
+  level         Int      @default(1)
+  notes         String?
+  proficiency   Int      @default(2)
+  race          String?
+  speed         Int      @default(30)
+  spells        String?
+  strength      Int      @default(10)
+  wisdom        Int      @default(10)
+  backgroundUrl String?
+  className2    String?
+  level2        Int      @default(0)
+  user          User?
 }
