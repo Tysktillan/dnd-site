@@ -46,7 +46,13 @@ const playerNavigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const [character, setCharacter] = useState<any>(null)
+  const [character, setCharacter] = useState<{
+    className?: string
+    className2?: string
+    level: number
+    level2?: number
+    backgroundUrl?: string
+  } | null>(null)
 
   useEffect(() => {
     // Fetch player character if user is a player
@@ -89,6 +95,7 @@ export function Sidebar() {
               {session.user.role === 'dm' ? (
                 <Shield className="h-5 w-5 text-red-400" />
               ) : character?.backgroundUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={character.backgroundUrl}
                   alt="Character"

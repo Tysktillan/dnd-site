@@ -16,7 +16,6 @@ interface NewsManagementProps {
 
 export default function NewsManagement({ posts: initialPosts }: NewsManagementProps) {
   const router = useRouter()
-  const [posts, setPosts] = useState(initialPosts)
   const [editingPost, setEditingPost] = useState<NewsPost | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [formData, setFormData] = useState({
@@ -187,7 +186,7 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
 
       {/* Posts List */}
       <div className="space-y-4">
-        {posts.map(post => (
+        {initialPosts.map(post => (
           <Card key={post.id} className="p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900 hover:border-amber-900/50 transition-colors">
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -244,7 +243,7 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
             </div>
           </Card>
         ))}
-        {posts.length === 0 && (
+        {initialPosts.length === 0 && (
           <Card className="p-12 bg-stone-950/90 backdrop-blur-xl border-stone-900 text-center">
             <Newspaper className="h-12 w-12 mx-auto mb-4 text-stone-700" />
             <p className="text-stone-500">No posts yet. Create your first announcement!</p>

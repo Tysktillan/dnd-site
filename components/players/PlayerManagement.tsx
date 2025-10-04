@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Player } from "@prisma/client";
-import { UserPlus, Edit, Trash2, Save, X } from "lucide-react";
+import { UserPlus, Trash2, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type UserWithPlayer = User & { player: Player | null };
@@ -18,9 +18,6 @@ interface PlayerManagementProps {
 
 export default function PlayerManagement({ players: initialPlayers, allCharacters: initialCharacters }: PlayerManagementProps) {
   const router = useRouter();
-  const [players, setPlayers] = useState(initialPlayers);
-  const [allCharacters, setAllCharacters] = useState(initialCharacters);
-  const [editingCharacter, setEditingCharacter] = useState<string | null>(null);
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [newCharacter, setNewCharacter] = useState({
     name: '',
