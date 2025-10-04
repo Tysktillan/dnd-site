@@ -37,7 +37,6 @@ const RARITIES = [
 
 export default function ItemsManagement({ items: initialItems }: ItemsManagementProps) {
   const router = useRouter()
-  const [items, setItems] = useState(initialItems)
   const [editingItem, setEditingItem] = useState<MagicalItem | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -334,6 +333,7 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
                 {/* Preview */}
                 {previewUrl && (
                   <div className="flex items-center gap-3 p-3 bg-black/30 border border-stone-800 rounded-lg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={previewUrl}
                       alt="Preview"

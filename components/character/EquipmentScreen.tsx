@@ -50,13 +50,12 @@ interface EquipmentScreenProps {
   onUpdateEquipment: (equipment: Equipment) => void
   onUpdateAvatar?: (url: string) => void
   onUpdateBackground?: (url: string) => void
-  onSave?: (overrides?: any) => Promise<void>
+  onSave?: (overrides?: Record<string, unknown>) => Promise<void>
 }
 
-export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, onUpdateEquipment, onUpdateAvatar, onUpdateBackground, onSave }: EquipmentScreenProps) {
+export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, onUpdateEquipment, onUpdateBackground, onSave }: EquipmentScreenProps) {
   const [editingSlot, setEditingSlot] = useState<string | null>(null)
   const [availableItems, setAvailableItems] = useState<MagicalItem[]>([])
-  const [loading, setLoading] = useState(false)
   const [uploadingBg, setUploadingBg] = useState(false)
   const [selectedBgFile, setSelectedBgFile] = useState<File | null>(null)
   const [showBgUpload, setShowBgUpload] = useState(false)
@@ -229,6 +228,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, onUpdateE
           {/* Character Portrait */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border-4 border-stone-800 bg-stone-900 overflow-hidden shadow-2xl z-10">
             {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarUrl} alt="Character" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-stone-700">
