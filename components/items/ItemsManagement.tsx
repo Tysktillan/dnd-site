@@ -201,7 +201,7 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
   }
 
   const groupedItems = SLOTS.reduce((acc, slot) => {
-    acc[slot.value] = items.filter(item => item.slot === slot.value)
+    acc[slot.value] = initialItems.filter(item => item.slot === slot.value)
     return acc
   }, {} as Record<string, MagicalItem[]>)
 
