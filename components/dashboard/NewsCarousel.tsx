@@ -15,7 +15,7 @@ export function NewsCarousel({ posts }: NewsCarouselProps) {
 
   if (posts.length === 0) {
     return (
-      <Card className="p-8 bg-stone-950/90 backdrop-blur-xl border-stone-900 text-center">
+      <Card className="p-4 md:p-6 lg:p-8 bg-stone-950/90 backdrop-blur-xl border-stone-900 text-center">
         <Scroll className="h-12 w-12 text-stone-700 mx-auto mb-3" />
         <p className="text-stone-400">No news posts yet</p>
         <p className="text-sm text-stone-600 mt-1">Check back later for updates from your DM</p>
@@ -36,14 +36,14 @@ export function NewsCarousel({ posts }: NewsCarouselProps) {
   return (
     <div className="space-y-4">
       {/* Main Post Card */}
-      <Card className="p-8 bg-stone-950/90 backdrop-blur-xl border-stone-900 relative overflow-hidden">
+      <Card className="p-4 md:p-6 lg:p-8 bg-stone-950/90 backdrop-blur-xl border-stone-900 relative overflow-hidden">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-red-900/10 to-transparent rounded-xl blur"></div>
 
         <div className="relative">
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-3xl font-bold text-stone-100">{currentPost.title}</h2>
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-stone-100">{currentPost.title}</h2>
               <span className="px-3 py-1 text-xs bg-red-950/50 text-red-300 border border-red-900/50 rounded-full">
                 News
               </span>

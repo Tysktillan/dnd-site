@@ -19,7 +19,8 @@ import {
   Users,
   Sparkles,
   Video,
-  Newspaper
+  Newspaper,
+  X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -43,7 +44,12 @@ const playerNavigation = [
   { name: 'Character', href: '/character', icon: UserIcon },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const [character, setCharacter] = useState<{
@@ -71,18 +77,49 @@ export function Sidebar() {
   // Determine navigation based on user role
   const navigation = session?.user?.role === 'dm' ? dmNavigation : playerNavigation
 
-  return (
-    <div className="flex h-full w-64 flex-col border-r border-stone-900 bg-stone-950/90 backdrop-blur-xl text-stone-100 relative">
-      {/* Gothic border glow */}
-      <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-red-900/30 to-transparent"></div>
+  // Close sidebar when clicking a link on mobile
+  const handleLinkClick = () => {
+    if (onClose) onClose()
+  }
 
-      <div className="flex h-16 items-center border-b border-stone-900 px-6 relative">
-        <h1 className="text-2xl font-black tracking-tighter relative">
-          <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">
-            BAROVIA
-          </span>
-        </h1>
-      </div>
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && onClose && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={cn(
+        "flex h-full w-64 flex-col border-r border-stone-900 bg-stone-950/90 backdrop-blur-xl text-stone-100 relative transition-transform duration-300 ease-in-out",
+        "lg:translate-x-0", // Always visible on desktop
+        isOpen ? "translate-x-0" : "-translate-x-full", // Mobile slide in/out
+        onClose && "fixed inset-y-0 left-0 z-50 lg:relative" // Fixed on mobile, relative on desktop
+      )}>
+        {/* Gothic border glow */}
+        <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-red-900/30 to-transparent"></div>
+
+        <div className="flex h-16 items-center border-b border-stone-900 px-6 relative justify-between">
+          <h1 className="text-2xl font-black tracking-tighter relative">
+            <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">
+              BAROVIA
+            </span>
+          </h1>
+          {/* Close button for mobile */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="lg:hidden text-stone-400 hover:text-stone-200"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
 
       {/* User Info */}
       {session?.user && (
@@ -130,6 +167,7 @@ export function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={handleLinkClick}
               className={cn(
                 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all group relative',
                 isActive
@@ -153,6 +191,7 @@ export function Sidebar() {
       <div className="border-t border-stone-900 p-4 space-y-3">
         <Link
           href="/legends-of-barovia"
+          onClick={handleLinkClick}
           className={cn(
             'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all group relative',
             pathname === '/legends-of-barovia'
@@ -178,6 +217,7 @@ export function Sidebar() {
           &quot;The mists await...&quot;
         </p>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

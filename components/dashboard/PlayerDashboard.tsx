@@ -32,7 +32,7 @@ export default async function PlayerDashboard() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-8 text-center">
         <h1 className="text-5xl font-black tracking-tighter mb-4">
           <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">

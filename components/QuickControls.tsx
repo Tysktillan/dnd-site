@@ -66,11 +66,11 @@ export function QuickControls() {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      {/* Floating Action Button - Smaller and better positioned on mobile */}
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end gap-3">
         {/* Expanded Options */}
         {isExpanded && (
-          <Card className="bg-slate-800 border-slate-700 p-3 shadow-xl animate-in slide-in-from-bottom-2">
+          <Card className="bg-slate-800 border-slate-700 p-2 md:p-3 shadow-xl animate-in slide-in-from-bottom-2">
             <div className="flex flex-col gap-2">
               {/* Quick Note */}
               <Button
@@ -78,11 +78,11 @@ export function QuickControls() {
                   setShowNoteDialog(true)
                   setIsExpanded(false)
                 }}
-                className="bg-yellow-600 hover:bg-yellow-700 justify-start"
+                className="bg-yellow-600 hover:bg-yellow-700 justify-start text-xs md:text-sm"
                 size="sm"
               >
-                <StickyNote className="h-4 w-4 mr-2" />
-                Quick Note
+                <StickyNote className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Quick</span> Note
               </Button>
 
               {/* Music Controls */}
@@ -91,36 +91,36 @@ export function QuickControls() {
                   setShowSoundboard(!showSoundboard)
                   setIsExpanded(false)
                 }}
-                className="bg-purple-600 hover:bg-purple-700 justify-start"
+                className="bg-purple-600 hover:bg-purple-700 justify-start text-xs md:text-sm"
                 size="sm"
               >
-                <Music className="h-4 w-4 mr-2" />
+                <Music className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                 Music
               </Button>
 
               {/* Combat Tracker */}
               <Button
                 onClick={openCombat}
-                className="bg-red-600 hover:bg-red-700 justify-start"
+                className="bg-red-600 hover:bg-red-700 justify-start text-xs md:text-sm"
                 size="sm"
               >
-                <Swords className="h-4 w-4 mr-2" />
+                <Swords className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                 Combat
               </Button>
             </div>
           </Card>
         )}
 
-        {/* Main FAB Button */}
+        {/* Main FAB Button - Smaller on mobile */}
         <Button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          className="h-12 w-12 md:h-14 md:w-14 rounded-full shadow-lg bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
           size="icon"
         >
           {isExpanded ? (
-            <ChevronDown className="h-6 w-6" />
+            <ChevronDown className="h-5 w-5 md:h-6 md:w-6" />
           ) : (
-            <ChevronUp className="h-6 w-6" />
+            <ChevronUp className="h-5 w-5 md:h-6 md:w-6" />
           )}
         </Button>
       </div>

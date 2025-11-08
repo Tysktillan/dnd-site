@@ -101,10 +101,10 @@ export default function NotesPage() {
   })
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Notes</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Notes</h1>
           <p className="text-slate-400">Quick reference for NPCs, locations, quests, and more</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

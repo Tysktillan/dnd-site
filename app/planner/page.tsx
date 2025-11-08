@@ -174,7 +174,7 @@ export default function PlannerPage() {
         return (
           <div className="flex items-center justify-center h-full p-12">
             <div className="max-w-4xl">
-              <h2 className="text-4xl font-bold text-white mb-6">{item.title}</h2>
+              <h2 className="text-2xl md:text-xl md:text-2xl lg:text-3xl lg:text-4xl font-bold text-white mb-6">{item.title}</h2>
               <p className="text-2xl text-slate-300 whitespace-pre-wrap">{item.content}</p>
             </div>
           </div>
@@ -229,10 +229,10 @@ export default function PlannerPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Session Planner</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Session Planner</h1>
           <p className="text-slate-400">Organize media and assets to show your players</p>
         </div>
         <div className="flex gap-2">

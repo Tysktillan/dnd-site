@@ -21,9 +21,9 @@ export default async function CharacterPage() {
 
   if (!user?.player) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto">
         <div className="text-center py-20">
-          <h1 className="text-3xl font-bold text-stone-200 mb-4">No Character Found</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-stone-200 mb-4">No Character Found</h1>
           <p className="text-stone-400">Contact your DM to create your character.</p>
         </div>
       </div>

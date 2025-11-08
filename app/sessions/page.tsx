@@ -449,10 +449,10 @@ export default function SessionsPage() {
   // Active session view
   if (activeSession) {
     return (
-      <div className="p-8">
+      <div className="p-4 md:p-6 lg:p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">
               🎲 Session {activeSession.sessionNumber}: {activeSession.title}
             </h1>
             <p className="text-stone-500">Session in progress</p>
@@ -817,10 +817,10 @@ export default function SessionsPage() {
 
   // Session prep view (list of sessions)
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Session Prep</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Session Prep</h1>
           <p className="text-slate-400">Plan and manage your game sessions</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
