@@ -11,10 +11,12 @@ async function main() {
     where: { username: 'dm' },
     update: {},
     create: {
+      id: crypto.randomUUID(),
       username: 'dm',
       password: hashedPassword,
       role: 'dm',
       name: 'Dungeon Master',
+      updatedAt: new Date(),
     },
   })
 
@@ -35,10 +37,12 @@ async function main() {
       where: { username: player.username },
       update: {},
       create: {
+        id: crypto.randomUUID(),
         username: player.username,
         password: hashedPassword,
         role: 'player',
         name: player.name,
+        updatedAt: new Date(),
       },
     })
     console.log('Created player:', created.username)
