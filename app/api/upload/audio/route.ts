@@ -1,38 +1,28 @@
 import { NextResponse } from 'next/server'
-import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
+import { put } from '@vercel/blob'
 
-export async function POST(request: Request): Promise<NextResponse> {
-  const body = (await request.json()) as HandleUploadBody
-
+export async function POST(request: Request) {
   try {
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (pathname: string) => {
-        // Validate file type from pathname
-        const ext = pathname.split('.').pop()?.toLowerCase()
-        const audioExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma']
+    const formData = await request.formData()
+    const file = formData.get('file') as File
 
-        if (!ext || !audioExtensions.includes(ext)) {
-          throw new Error('Invalid file type. Only audio files are allowed.')
-        }
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    }
 
-        return {
-          allowedContentTypes: ['audio/*'],
-          tokenPayload: JSON.stringify({}),
-        }
-      },
-      onUploadCompleted: async ({ blob }) => {
-        console.log('Upload completed:', blob.url)
-      },
+    // Generate unique filename
+    const timestamp = Date.now()
+    const filename = `audio/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
     })
 
-    return NextResponse.json(jsonResponse)
+    // Return blob URL
+    return NextResponse.json({ url: blob.url })
   } catch (error) {
     console.error('Upload error:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to upload file' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
   }
 }
