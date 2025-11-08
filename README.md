@@ -98,6 +98,26 @@ If you haven't set up Neon yet:
 
 See [NEON_SETUP_GUIDE.md](./NEON_SETUP_GUIDE.md) for detailed instructions with screenshots.
 
+## Utility Scripts
+
+### Update User Password
+
+If you need to change a user's password (e.g., forgot DM password):
+
+```bash
+npm run update-password <username> <new-password>
+```
+
+Example:
+```bash
+npm run update-password dm MyNewPassword123
+```
+
+The script will:
+- Hash the password using bcrypt (same as the auth system)
+- Update it in your database
+- Confirm the update
+
 ## Usage
 
 ### First Time Setup
