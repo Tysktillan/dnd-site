@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
 
+// Config to increase body size limit for this route
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+  },
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData()
@@ -8,6 +17,23 @@ export async function POST(request: Request) {
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    }
+
+    // Validate file size (50MB limit)
+    const maxSize = 50 * 1024 * 1024 // 50MB in bytes
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: 'File too large. Maximum size is 50MB.' },
+        { status: 413 }
+      )
+    }
+
+    // Validate file type (audio only)
+    if (!file.type.startsWith('audio/')) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Only audio files are allowed.' },
+        { status: 400 }
+      )
     }
 
     // Generate unique filename

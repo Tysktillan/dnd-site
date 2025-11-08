@@ -60,13 +60,17 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
         body: formData
       })
 
-      if (!response.ok) throw new Error('Upload failed')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Upload failed')
+      }
 
       const data = await response.json()
       setFormData(prev => ({ ...prev, audioUrl: data.url }))
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Failed to upload audio file')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload audio file'
+      alert(errorMessage)
     } finally {
       setUploadingAudio(false)
     }
@@ -195,7 +199,7 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
             </div>
             <div>
               <Label className="text-xs text-stone-400 mb-2 block">Audio Narration (Optional)</Label>
-              <p className="text-xs text-stone-600 mb-3">Upload a text-to-speech audio version of your post content</p>
+              <p className="text-xs text-stone-600 mb-3">Upload a text-to-speech audio version of your post content (max 50MB)</p>
               <div className="space-y-3">
                 {formData.audioUrl ? (
                   <div className="flex items-center gap-3 p-3 bg-stone-900/50 border border-stone-800 rounded">
