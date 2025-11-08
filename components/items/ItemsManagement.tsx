@@ -490,9 +490,9 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
                           <div className="flex items-center gap-2">
                             <h3 className={`font-semibold ${rarityColor}`}>{item.name}</h3>
                             {item.isPublished ? (
-                              <Eye className="h-3 w-3 text-green-400" title="Published" />
+                              <Eye className="h-3 w-3 text-green-400" />
                             ) : (
-                              <EyeOff className="h-3 w-3 text-stone-600" title="Draft" />
+                              <EyeOff className="h-3 w-3 text-stone-600" />
                             )}
                           </div>
                           <p className="text-xs text-stone-500 uppercase tracking-wider">{item.rarity}</p>
