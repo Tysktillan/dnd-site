@@ -18,7 +18,12 @@ async function main() {
     await prisma.player.upsert({
       where: { name: player.name },
       update: {},
-      create: player,
+      create: {
+        id: crypto.randomUUID(),
+        name: player.name,
+        order: player.order,
+        updatedAt: new Date(),
+      },
     })
     console.log(`✓ ${player.name}`)
   }
