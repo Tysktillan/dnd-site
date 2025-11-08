@@ -10,7 +10,7 @@ export async function GET(
     const campaign = await prisma.campaign.findUnique({
       where: { id },
       include: {
-        chapters: {
+        Chapter: {
           orderBy: { order: 'asc' }
         }
       }

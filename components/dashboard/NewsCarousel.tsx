@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Scroll } from "lucide-react"
+import { ChevronLeft, ChevronRight, Scroll, Volume2 } from "lucide-react"
 import { NewsPost } from "@prisma/client"
 
 interface NewsCarouselProps {
@@ -64,6 +64,27 @@ export function NewsCarousel({ posts }: NewsCarouselProps) {
             <p className="text-lg text-stone-300 mb-6 font-medium italic border-l-4 border-red-900/50 pl-4">
               {currentPost.excerpt}
             </p>
+          )}
+
+          {/* Audio Narration */}
+          {currentPost.audioUrl && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-amber-950/20 to-red-950/20 border border-amber-900/30 rounded-lg">
+              <div className="flex items-center gap-3 mb-3">
+                <Volume2 className="h-5 w-5 text-amber-400" />
+                <span className="text-sm font-medium text-amber-200">Audio Narration Available</span>
+              </div>
+              <audio
+                controls
+                className="w-full h-10"
+                style={{
+                  filter: 'invert(0.9) hue-rotate(180deg)',
+                }}
+              >
+                <source src={currentPost.audioUrl} type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+              <p className="text-xs text-stone-500 mt-2">Listen to this post read aloud</p>
+            </div>
           )}
 
           {/* Content */}

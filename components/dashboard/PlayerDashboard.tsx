@@ -11,7 +11,10 @@ export default async function PlayerDashboard() {
   // Fetch player character
   const user = await prisma.user.findUnique({
     where: { id: session?.user?.id },
-    include: { player: true }
+    include: {
+      player: true,
+      secondaryPlayer: true
+    }
   });
 
   const character = user?.player;

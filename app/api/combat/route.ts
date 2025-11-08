@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const combats = await prisma.combat.findMany({
       include: {
-        initiatives: {
+        Initiative: {
           orderBy: { initiativeRoll: 'desc' }
         }
       },
@@ -29,13 +29,15 @@ export async function POST(request: Request) {
 
     const combat = await prisma.combat.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         sessionId: body.sessionId || null,
         phase: body.phase || 'setup',
         isActive: true,
+        updatedAt: new Date(),
       },
       include: {
-        initiatives: true
+        Initiative: true
       }
     })
     return NextResponse.json(combat)

@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     // Create the character
     const character = await prisma.player.create({
       data: {
+        id: crypto.randomUUID(),
         name: data.name,
         className: data.className,
         race: data.race,
@@ -32,6 +33,7 @@ export async function POST(request: NextRequest) {
         charisma: data.charisma || 10,
         background: data.background,
         alignment: data.alignment,
+        updatedAt: new Date(),
       }
     });
 

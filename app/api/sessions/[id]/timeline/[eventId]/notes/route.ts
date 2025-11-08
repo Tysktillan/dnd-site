@@ -27,8 +27,10 @@ export async function POST(
     const body = await request.json()
     const note = await prisma.eventNote.create({
       data: {
+        id: crypto.randomUUID(),
         timelineEventId: eventId,
-        content: body.content
+        content: body.content,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(note)

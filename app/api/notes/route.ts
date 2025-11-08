@@ -17,10 +17,12 @@ export async function POST(request: Request) {
     const body = await request.json()
     const note = await prisma.note.create({
       data: {
+        id: crypto.randomUUID(),
         title: body.title,
         content: body.content,
         category: body.category,
         tags: body.tags,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(note)

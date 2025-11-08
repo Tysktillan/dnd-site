@@ -25,6 +25,8 @@ export async function PATCH(
         stats: data.stats || null,
         description: data.description || null,
         imageUrl: data.imageUrl || null,
+        isPublished: data.isPublished ?? false,
+        visibleToPlayerIds: data.visibleToPlayerIds || null,
       }
     });
 

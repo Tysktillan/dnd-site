@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const asset = await prisma.audioAsset.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         url: body.url,
         sourceType: body.sourceType || 'file',
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
         category: body.category,
         duration: body.duration,
         description: body.description,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(asset)

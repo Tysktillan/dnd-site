@@ -14,10 +14,13 @@ export async function POST(request: NextRequest) {
 
     const post = await prisma.newsPost.create({
       data: {
+        id: crypto.randomUUID(),
         title: data.title,
         excerpt: data.excerpt,
         content: data.content,
+        audioUrl: data.audioUrl || null,
         isPublished: false,
+        updatedAt: new Date(),
       }
     });
 

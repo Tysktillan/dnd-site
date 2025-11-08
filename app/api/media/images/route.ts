@@ -18,11 +18,13 @@ export async function POST(request: Request) {
     const body = await request.json()
     const asset = await prisma.imageAsset.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         url: body.url,
         tags: body.tags,
         category: body.category,
         description: body.description,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(asset)

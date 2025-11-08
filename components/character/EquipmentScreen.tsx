@@ -47,13 +47,14 @@ interface EquipmentScreenProps {
   equipment: Equipment
   avatarUrl?: string
   backgroundUrl?: string
+  playerId?: string
   onUpdateEquipment: (equipment: Equipment) => void
   onUpdateAvatar?: (url: string) => void
   onUpdateBackground?: (url: string) => void
   onSave?: (overrides?: Record<string, unknown>) => Promise<void>
 }
 
-export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, onUpdateEquipment, onUpdateBackground, onSave }: EquipmentScreenProps) {
+export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId, onUpdateEquipment, onUpdateBackground, onSave }: EquipmentScreenProps) {
   const [editingSlot, setEditingSlot] = useState<string | null>(null)
   const [availableItems, setAvailableItems] = useState<MagicalItem[]>([])
   const [uploadingBg, setUploadingBg] = useState(false)
@@ -62,11 +63,12 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, onUpdateE
 
   useEffect(() => {
     fetchItems()
-  }, [])
+  }, [playerId])
 
   const fetchItems = async () => {
     try {
-      const response = await fetch('/api/items')
+      const url = playerId ? `/api/items?playerId=${playerId}` : '/api/items'
+      const response = await fetch(url)
       if (response.ok) {
         const items = await response.json()
         setAvailableItems(items)

@@ -8,112 +8,78 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id                String   @id @default(cuid())
-  username          String   @unique
-  password          String
-  role              String   @default("player")
-  name              String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  playerId          String?  @unique
-  player            Player?  @relation("PrimaryPlayer", fields: [playerId], references: [id])
-  secondaryPlayerId String?  @unique
-  secondaryPlayer   Player?  @relation("SecondaryPlayer", fields: [secondaryPlayerId], references: [id])
+model AudioAsset {
+  id             String   @id
+  name           String
+  url            String
+  tags           String?
+  category       String
+  duration       Int?
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+  sourceType     String   @default("file")
+  soundboardSlot Int?
 }
 
 model Campaign {
-  id          String    @id @default(cuid())
+  id          String    @id
   name        String
   description String?
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  chapters    Chapter[]
-  sessions    Session[]
+  updatedAt   DateTime
+  Chapter     Chapter[]
+  Session     Session[]
 }
 
 model Chapter {
-  id         String   @id @default(cuid())
+  id         String   @id
   campaignId String
   title      String
   content    String
   order      Int
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-}
-
-model Session {
-  id            String          @id @default(cuid())
-  campaignId    String?
-  sessionNumber Int
-  title         String
-  date          DateTime
-  notes         String?
-  summary       String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  status        String          @default("prep")
-  combats       Combat[]
-  plannerItems  PlannerItem[]
-  campaign      Campaign?       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  timeline      TimelineEvent[]
-}
-
-model TimelineEvent {
-  id          String      @id @default(cuid())
-  sessionId   String
-  order       Int
-  title       String
-  description String?
-  soundUrls   String?
-  completed   Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  imageUrls   String?
-  notes       EventNote[]
-  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-}
-
-model EventNote {
-  id              String        @id @default(cuid())
-  timelineEventId String
-  content         String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  timelineEvent   TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
-}
-
-model PlannerItem {
-  id        String   @id @default(cuid())
-  sessionId String?
-  type      String
-  title     String
-  content   String
-  order     Int
-  shown     Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  updatedAt  DateTime
+  Campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
 model Combat {
-  id          String       @id @default(cuid())
-  sessionId   String?
+  id         String       @id
+  sessionId  String?
+  name       String
+  round      Int          @default(1)
+  isActive   Boolean      @default(true)
+  outcome    String?
+  notes      String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  phase      String       @default("setup")
+  Session    Session?     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  Initiative Initiative[]
+}
+
+model EventNote {
+  id              String        @id
+  timelineEventId String
+  content         String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  TimelineEvent   TimelineEvent @relation(fields: [timelineEventId], references: [id], onDelete: Cascade)
+}
+
+model ImageAsset {
+  id          String   @id
   name        String
-  round       Int          @default(1)
-  isActive    Boolean      @default(true)
-  outcome     String?
-  notes       String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  phase       String       @default("setup")
-  session     Session?     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  initiatives Initiative[]
+  url         String
+  tags        String?
+  category    String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
 }
 
 model Initiative {
-  id             String   @id @default(cuid())
+  id             String   @id
   combatId       String
   name           String
   initiativeRoll Int
@@ -125,112 +91,153 @@ model Initiative {
   notes          String?
   order          Int
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  updatedAt      DateTime
   damageTaken    Int      @default(0)
-  combat         Combat   @relation(fields: [combatId], references: [id], onDelete: Cascade)
+  Combat         Combat   @relation(fields: [combatId], references: [id], onDelete: Cascade)
 }
 
-model Sound {
-  id        String   @id @default(cuid())
-  name      String
-  category  String
-  url       String
-  duration  Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model MagicalItem {
+  id                 String   @id
+  name               String
+  slot               String
+  rarity             String   @default("common")
+  stats              String?
+  description        String?
+  imageUrl           String?
+  isActive           Boolean  @default(true)
+  isPublished        Boolean  @default(false)
+  visibleToPlayerIds String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
 }
 
-model AudioAsset {
-  id             String   @id @default(cuid())
-  name           String
-  url            String
-  tags           String?
-  category       String
-  duration       Int?
-  description    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  sourceType     String   @default("file")
-  soundboardSlot Int?
-}
-
-model ImageAsset {
-  id          String   @id @default(cuid())
-  name        String
-  url         String
-  tags        String?
-  category    String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model NewsPost {
+  id          String    @id
+  title       String
+  content     String
+  excerpt     String?
+  audioUrl    String?
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
 }
 
 model Note {
-  id        String   @id @default(cuid())
+  id        String   @id
   title     String
   content   String
   category  String?
   tags      String?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime
 }
 
-model NewsPost {
-  id          String    @id @default(cuid())
-  title       String
-  content     String
-  excerpt     String?
-  isPublished Boolean   @default(false)
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model MagicalItem {
-  id          String   @id @default(cuid())
-  name        String
-  slot        String
-  rarity      String   @default("common")
-  stats       String?
-  description String?
-  imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model PlannerItem {
+  id        String   @id
+  sessionId String?
+  type      String
+  title     String
+  content   String
+  order     Int
+  shown     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model Player {
-  id            String   @id @default(cuid())
-  name          String   @unique
-  maxHp         Int?
-  armorClass    Int?
-  isActive      Boolean  @default(true)
-  order         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  alignment     String?
-  avatarUrl     String?
-  background    String?
-  charisma      Int      @default(10)
-  className     String?
-  constitution  Int      @default(10)
-  currentHp     Int?
-  dexterity     Int      @default(10)
-  equipment     String?
-  features      String?
-  inspiration   Boolean  @default(false)
-  intelligence  Int      @default(10)
-  level         Int      @default(1)
+  id                                  String   @id
+  name                                String   @unique
+  maxHp                               Int?
+  armorClass                          Int?
+  isActive                            Boolean  @default(true)
+  order                               Int      @default(0)
+  createdAt                           DateTime @default(now())
+  updatedAt                           DateTime
+  alignment                           String?
+  avatarUrl                           String?
+  background                          String?
+  charisma                            Int      @default(10)
+  className                           String?
+  constitution                        Int      @default(10)
+  currentHp                           Int?
+  dexterity                           Int      @default(10)
+  equipment                           String?
+  features                            String?
+  inspiration                         Boolean  @default(false)
+  intelligence                        Int      @default(10)
+  level                               Int      @default(1)
+  notes                               String?
+  proficiency                         Int      @default(2)
+  race                                String?
+  speed                               Int      @default(30)
+  spells                              String?
+  strength                            Int      @default(10)
+  wisdom                              Int      @default(10)
+  backgroundUrl                       String?
+  className2                          String?
+  level2                              Int      @default(0)
+  subclass           String?
+  subclass2          String?
+  skillProficiencies String?
+  jackOfAllTrades    Boolean  @default(false)
+  primaryUser        User?    @relation("UserPrimaryPlayer")
+  secondaryUser      User?    @relation("UserSecondaryPlayer")
+}
+
+model Session {
+  id            String          @id
+  campaignId    String?
+  sessionNumber Int
+  title         String
+  date          DateTime
   notes         String?
-  proficiency   Int      @default(2)
-  race          String?
-  speed         Int      @default(30)
-  spells        String?
-  strength      Int      @default(10)
-  wisdom        Int      @default(10)
-  backgroundUrl String?
-  className2    String?
-  level2        Int      @default(0)
-  primaryUser   User?    @relation("PrimaryPlayer")
-  secondaryUser User?    @relation("SecondaryPlayer")
+  summary       String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  status        String          @default("prep")
+  Combat        Combat[]
+  PlannerItem   PlannerItem[]
+  Campaign      Campaign?       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  TimelineEvent TimelineEvent[]
+}
+
+model Sound {
+  id        String   @id
+  name      String
+  category  String
+  url       String
+  duration  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model TimelineEvent {
+  id          String      @id
+  sessionId   String
+  order       Int
+  title       String
+  description String?
+  soundUrls   String?
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  imageUrls   String?
+  EventNote   EventNote[]
+  Session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                String   @id
+  username          String   @unique
+  password          String
+  role              String   @default("player")
+  name              String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime
+  playerId          String?  @unique
+  secondaryPlayerId String?  @unique
+  player            Player?  @relation("UserPrimaryPlayer", fields: [playerId], references: [id])
+  secondaryPlayer   Player?  @relation("UserSecondaryPlayer", fields: [secondaryPlayerId], references: [id])
 }

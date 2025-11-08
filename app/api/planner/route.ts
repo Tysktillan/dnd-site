@@ -17,11 +17,13 @@ export async function POST(request: Request) {
     const body = await request.json()
     const item = await prisma.plannerItem.create({
       data: {
+        id: crypto.randomUUID(),
         sessionId: body.sessionId || null,
         type: body.type,
         title: body.title,
         content: body.content,
         order: body.order,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(item)

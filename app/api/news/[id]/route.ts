@@ -22,6 +22,7 @@ export async function PATCH(
         title: data.title,
         excerpt: data.excerpt,
         content: data.content,
+        audioUrl: data.audioUrl !== undefined ? data.audioUrl : undefined,
         isPublished: data.isPublished,
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
       }

@@ -10,10 +10,12 @@ export async function POST(
     const body = await request.json()
     const chapter = await prisma.chapter.create({
       data: {
+        id: crypto.randomUUID(),
         campaignId: id,
         title: body.title,
         content: body.content,
         order: body.order,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(chapter)

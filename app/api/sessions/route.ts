@@ -17,12 +17,14 @@ export async function POST(request: Request) {
     const body = await request.json()
     const session = await prisma.session.create({
       data: {
+        id: crypto.randomUUID(),
         campaignId: body.campaignId || null,
         sessionNumber: body.sessionNumber,
         title: body.title,
         date: new Date(body.date),
         notes: body.notes,
         summary: body.summary,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(session)

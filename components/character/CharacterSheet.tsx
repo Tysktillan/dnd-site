@@ -252,6 +252,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             equipment={equipment}
             avatarUrl={character.avatarUrl ?? undefined}
             backgroundUrl={character.backgroundUrl ?? undefined}
+            playerId={character.id}
             onUpdateEquipment={updateEquipment}
             onUpdateAvatar={(url) => updateField('avatarUrl', url)}
             onUpdateBackground={(url) => updateField('backgroundUrl', url)}

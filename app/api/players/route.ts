@@ -18,10 +18,12 @@ export async function POST(request: Request) {
     const body = await request.json()
     const player = await prisma.player.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         maxHp: body.maxHp,
         armorClass: body.armorClass,
         order: body.order || 0,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(player)

@@ -17,10 +17,12 @@ export async function POST(request: Request) {
     const body = await request.json()
     const sound = await prisma.sound.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         category: body.category,
         url: body.url,
         duration: body.duration || null,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(sound)

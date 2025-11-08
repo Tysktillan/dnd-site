@@ -11,7 +11,7 @@ export async function GET(
       where: { sessionId: id },
       orderBy: { order: 'asc' },
       include: {
-        notes: {
+        EventNote: {
           orderBy: { createdAt: 'desc' }
         }
       }
@@ -33,12 +33,14 @@ export async function POST(
     console.log('Creating timeline event for session:', id, 'Event data:', body)
     const event = await prisma.timelineEvent.create({
       data: {
+        id: crypto.randomUUID(),
         sessionId: id,
         title: body.title,
         description: body.description,
         soundUrls: body.soundUrls,
         imageUrls: body.imageUrls,
         order: body.order || 0,
+        updatedAt: new Date(),
       }
     })
     console.log('Created timeline event:', event)

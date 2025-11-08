@@ -18,7 +18,7 @@ export async function PUT(
         notes: body.notes,
       },
       include: {
-        initiatives: true
+        Initiative: true
       }
     })
     return NextResponse.json(combat)

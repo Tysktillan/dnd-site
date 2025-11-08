@@ -1,17 +1,24 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MagicalItem } from "@prisma/client"
-import { Plus, Edit, Trash2, Save, X, Sparkles, Upload, Loader2 } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, Sparkles, Upload, Loader2, Eye, EyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Switch } from "@/components/ui/switch"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface ItemsManagementProps {
   items: MagicalItem[]
+}
+
+interface Player {
+  id: string
+  name: string
 }
 
 const SLOTS = [
@@ -40,6 +47,7 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
   const [editingItem, setEditingItem] = useState<MagicalItem | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [players, setPlayers] = useState<Player[]>([])
   const [formData, setFormData] = useState({
     name: '',
     slot: 'helm',
@@ -47,9 +55,27 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
     stats: '',
     description: '',
     imageUrl: '',
+    isPublished: false,
+    visibleToPlayerIds: [] as string[],
   })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
+
+  useEffect(() => {
+    fetchPlayers()
+  }, [])
+
+  const fetchPlayers = async () => {
+    try {
+      const response = await fetch('/api/players')
+      if (response.ok) {
+        const data = await response.json()
+        setPlayers(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch players:', error)
+    }
+  }
 
   const handleCreate = () => {
     setIsCreating(true)
@@ -60,6 +86,8 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
       stats: '',
       description: '',
       imageUrl: '',
+      isPublished: false,
+      visibleToPlayerIds: [],
     })
     setSelectedFile(null)
     setPreviewUrl('')
@@ -74,6 +102,8 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
       stats: item.stats || '',
       description: item.description || '',
       imageUrl: item.imageUrl || '',
+      isPublished: item.isPublished || false,
+      visibleToPlayerIds: item.visibleToPlayerIds ? item.visibleToPlayerIds.split(',').map(id => id.trim()) : [],
     })
     setSelectedFile(null)
     setPreviewUrl(item.imageUrl || '')
@@ -160,10 +190,18 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
       const response = await fetch(url, {
         method: editingItem ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, imageUrl })
+        body: JSON.stringify({
+          ...formData,
+          imageUrl,
+          visibleToPlayerIds: formData.visibleToPlayerIds.length > 0 ? formData.visibleToPlayerIds.join(',') : null
+        })
       })
 
-      if (!response.ok) throw new Error('Failed to save item')
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('API Error:', errorData)
+        throw new Error(errorData.error || 'Failed to save item')
+      }
 
       setEditingItem(null)
       setIsCreating(false)
@@ -285,6 +323,64 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
                 className="bg-stone-900 border-stone-800 text-stone-100 resize-none"
               />
             </div>
+
+            {/* Visibility Settings */}
+            <div className="col-span-2">
+              <div className="p-4 bg-stone-900/50 border border-stone-800 rounded-lg space-y-4">
+                {/* Published Toggle */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {formData.isPublished ? (
+                      <Eye className="h-4 w-4 text-green-400" />
+                    ) : (
+                      <EyeOff className="h-4 w-4 text-stone-500" />
+                    )}
+                    <div>
+                      <Label className="text-sm text-stone-200 font-medium">Published</Label>
+                      <p className="text-xs text-stone-500">
+                        {formData.isPublished ? 'Visible to players' : 'Draft - only you can see'}
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={formData.isPublished}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPublished: checked }))}
+                  />
+                </div>
+
+                {/* Player Restriction */}
+                {formData.isPublished && players.length > 0 && (
+                  <div className="pt-3 border-t border-stone-800">
+                    <Label className="text-xs text-stone-400 mb-2 block">Restrict to specific players (optional)</Label>
+                    <p className="text-xs text-stone-600 mb-3">Leave all unchecked to show to everyone</p>
+                    <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                      {players.map(player => (
+                        <div key={player.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`player-${player.id}`}
+                            checked={formData.visibleToPlayerIds.includes(player.id)}
+                            onCheckedChange={(checked) => {
+                              setFormData(prev => ({
+                                ...prev,
+                                visibleToPlayerIds: checked
+                                  ? [...prev.visibleToPlayerIds, player.id]
+                                  : prev.visibleToPlayerIds.filter(id => id !== player.id)
+                              }))
+                            }}
+                          />
+                          <label
+                            htmlFor={`player-${player.id}`}
+                            className="text-xs text-stone-300 cursor-pointer truncate"
+                          >
+                            {player.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="col-span-2">
               <Label className="text-xs text-stone-400 mb-2 block">
                 Item Icon (Recommended: 64x64 pixels)
@@ -391,8 +487,20 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
                     <Card key={item.id} className="p-4 bg-stone-950/90 backdrop-blur-xl border-stone-900 hover:border-amber-900/50 transition-colors">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <h3 className={`font-semibold ${rarityColor}`}>{item.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className={`font-semibold ${rarityColor}`}>{item.name}</h3>
+                            {item.isPublished ? (
+                              <Eye className="h-3 w-3 text-green-400" title="Published" />
+                            ) : (
+                              <EyeOff className="h-3 w-3 text-stone-600" title="Draft" />
+                            )}
+                          </div>
                           <p className="text-xs text-stone-500 uppercase tracking-wider">{item.rarity}</p>
+                          {item.visibleToPlayerIds && (
+                            <p className="text-xs text-amber-600 mt-1">
+                              Restricted to {item.visibleToPlayerIds.split(',').length} player(s)
+                            </p>
+                          )}
                         </div>
                         <div className="flex gap-1">
                           <Button

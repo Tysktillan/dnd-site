@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { NewsPost } from "@prisma/client"
-import { Plus, Edit, Trash2, Save, X, Newspaper, Eye, EyeOff } from "lucide-react"
+import { Plus, Edit, Trash2, Save, X, Newspaper, Eye, EyeOff, Upload, Music } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface NewsManagementProps {
@@ -22,7 +22,9 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
     title: '',
     excerpt: '',
     content: '',
+    audioUrl: '',
   })
+  const [uploadingAudio, setUploadingAudio] = useState(false)
 
   const handleCreate = () => {
     setIsCreating(true)
@@ -30,6 +32,7 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
       title: '',
       excerpt: '',
       content: '',
+      audioUrl: '',
     })
   }
 
@@ -39,7 +42,34 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
       title: post.title,
       excerpt: post.excerpt || '',
       content: post.content,
+      audioUrl: post.audioUrl || '',
     })
+  }
+
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setUploadingAudio(true)
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload/audio', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) throw new Error('Upload failed')
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, audioUrl: data.url }))
+    } catch (error) {
+      console.error('Upload failed:', error)
+      alert('Failed to upload audio file')
+    } finally {
+      setUploadingAudio(false)
+    }
   }
 
   const handleSave = async () => {
@@ -162,6 +192,43 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
                 rows={12}
                 className="bg-stone-900 border-stone-800 text-stone-100 resize-none font-mono text-sm"
               />
+            </div>
+            <div>
+              <Label className="text-xs text-stone-400 mb-2 block">Audio Narration (Optional)</Label>
+              <p className="text-xs text-stone-600 mb-3">Upload a text-to-speech audio version of your post content</p>
+              <div className="space-y-3">
+                {formData.audioUrl ? (
+                  <div className="flex items-center gap-3 p-3 bg-stone-900/50 border border-stone-800 rounded">
+                    <Music className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-stone-300 flex-1 truncate">Audio attached</span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setFormData(prev => ({ ...prev, audioUrl: '' }))}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    <Input
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleAudioUpload}
+                      disabled={uploadingAudio}
+                      className="bg-stone-900 border-stone-800 text-stone-100"
+                    />
+                    {uploadingAudio && (
+                      <p className="text-xs text-amber-400 mt-2">
+                        <Upload className="h-3 w-3 inline mr-1 animate-pulse" />
+                        Uploading audio...
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="flex gap-2 mt-4">

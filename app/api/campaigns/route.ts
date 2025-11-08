@@ -7,8 +7,8 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            chapters: true,
-            sessions: true
+            Chapter: true,
+            Session: true
           }
         }
       },
@@ -25,8 +25,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const campaign = await prisma.campaign.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         description: body.description,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(campaign)

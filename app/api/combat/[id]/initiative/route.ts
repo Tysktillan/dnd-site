@@ -27,6 +27,7 @@ export async function POST(
     const body = await request.json()
     const initiative = await prisma.initiative.create({
       data: {
+        id: crypto.randomUUID(),
         combatId: id,
         name: body.name,
         initiativeRoll: body.initiativeRoll,
@@ -35,6 +36,7 @@ export async function POST(
         maxHp: body.maxHp,
         isPlayer: body.isPlayer,
         order: body.initiativeRoll,
+        updatedAt: new Date(),
       }
     })
     return NextResponse.json(initiative)
