@@ -1,54 +1,38 @@
 import { NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 
-// Config to increase body size limit for this route
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-  },
-}
+export async function POST(request: Request): Promise<NextResponse> {
+  const body = (await request.json()) as HandleUploadBody
 
-export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname: string) => {
+        // Validate file type from pathname
+        const ext = pathname.split('.').pop()?.toLowerCase()
+        const audioExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma']
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
-    }
+        if (!ext || !audioExtensions.includes(ext)) {
+          throw new Error('Invalid file type. Only audio files are allowed.')
+        }
 
-    // Validate file size (50MB limit)
-    const maxSize = 50 * 1024 * 1024 // 50MB in bytes
-    if (file.size > maxSize) {
-      return NextResponse.json(
-        { error: 'File too large. Maximum size is 50MB.' },
-        { status: 413 }
-      )
-    }
-
-    // Validate file type (audio only)
-    if (!file.type.startsWith('audio/')) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Only audio files are allowed.' },
-        { status: 400 }
-      )
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const filename = `audio/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-
-    // Upload to Vercel Blob
-    const blob = await put(filename, file, {
-      access: 'public',
+        return {
+          allowedContentTypes: ['audio/*'],
+          tokenPayload: JSON.stringify({}),
+        }
+      },
+      onUploadCompleted: async ({ blob }) => {
+        console.log('Upload completed:', blob.url)
+      },
     })
 
-    // Return blob URL
-    return NextResponse.json({ url: blob.url })
+    return NextResponse.json(jsonResponse)
   } catch (error) {
     console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to upload file' },
+      { status: 400 }
+    )
   }
 }

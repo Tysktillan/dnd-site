@@ -50,23 +50,31 @@ export default function NewsManagement({ posts: initialPosts }: NewsManagementPr
     const file = e.target.files?.[0]
     if (!file) return
 
+    // Validate file size client-side (50MB limit)
+    const maxSize = 50 * 1024 * 1024
+    if (file.size > maxSize) {
+      alert('File too large. Maximum size is 50MB.')
+      return
+    }
+
+    // Validate file type client-side
+    if (!file.type.startsWith('audio/')) {
+      alert('Invalid file type. Only audio files are allowed.')
+      return
+    }
+
     try {
       setUploadingAudio(true)
-      const formData = new FormData()
-      formData.append('file', file)
 
-      const response = await fetch('/api/upload/audio', {
-        method: 'POST',
-        body: formData
+      // Use Vercel Blob client-side upload to bypass serverless function body limit
+      const { upload } = await import('@vercel/blob/client')
+
+      const blob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload/audio',
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
-      }
-
-      const data = await response.json()
-      setFormData(prev => ({ ...prev, audioUrl: data.url }))
+      setFormData(prev => ({ ...prev, audioUrl: blob.url }))
     } catch (error) {
       console.error('Upload failed:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload audio file'
