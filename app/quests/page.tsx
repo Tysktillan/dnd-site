@@ -406,7 +406,7 @@ function QuestCard({
   onDelete: (id: string) => void
   onTogglePublic: (id: string, isPublic: boolean) => void
   getPriorityColor: (priority: string) => string
-  getPriorityIcon: (priority: string) => JSX.Element
+  getPriorityIcon: (priority: string) => React.ReactElement
 }) {
   const isOwner = quest.createdBy === currentUserId
 
