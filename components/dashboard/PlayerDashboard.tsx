@@ -19,10 +19,10 @@ export default async function PlayerDashboard() {
 
   const character = user?.player;
 
-  // Fetch all published news posts
+  // Fetch all published news posts (newest first)
   const newsPosts = await prisma.newsPost.findMany({
     where: { isPublished: true },
-    orderBy: { publishedAt: 'desc' }
+    orderBy: { createdAt: 'desc' }
   });
 
   // Calculate ability modifiers
