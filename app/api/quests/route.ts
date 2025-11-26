@@ -77,14 +77,6 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
-    // Only DM can create official quests
-    if (data.type === 'official' && session.user.role !== 'dm') {
-      return NextResponse.json(
-        { error: "Only DM can create official quests" },
-        { status: 403 }
-      );
-    }
-
     const quest = await prisma.quest.create({
       data: {
         id: crypto.randomUUID(),
@@ -95,6 +87,8 @@ export async function POST(request: NextRequest) {
         priority: data.priority || 'normal',
         isPublic: data.isPublic ?? false,
         reward: data.reward || null,
+        isTimeSensitive: data.isTimeSensitive ?? false,
+        timeConstraint: data.timeConstraint || null,
         createdBy: session.user.id,
         updatedAt: new Date(),
       },

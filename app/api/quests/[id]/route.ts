@@ -38,6 +38,8 @@ export async function PATCH(
       isPublic?: boolean;
       reward?: string | null;
       completedAt?: Date | null;
+      isTimeSensitive?: boolean;
+      timeConstraint?: string | null;
     };
 
     const updateData: UpdateData = {
@@ -59,6 +61,8 @@ export async function PATCH(
     if (data.priority !== undefined) updateData.priority = data.priority;
     if (data.isPublic !== undefined) updateData.isPublic = data.isPublic;
     if (data.reward !== undefined) updateData.reward = data.reward;
+    if (data.isTimeSensitive !== undefined) updateData.isTimeSensitive = data.isTimeSensitive;
+    if (data.timeConstraint !== undefined) updateData.timeConstraint = data.timeConstraint;
 
     const quest = await prisma.quest.update({
       where: { id },

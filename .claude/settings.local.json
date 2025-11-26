@@ -10,7 +10,8 @@
       "Bash(npx prisma generate:*)",
       "Bash(npx prisma:*)",
       "Bash(npm install:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

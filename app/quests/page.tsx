@@ -10,7 +10,6 @@ import {
   Scroll,
   Plus,
   Check,
-  X,
   Clock,
   AlertCircle,
   Trophy,
@@ -50,6 +49,8 @@ type Quest = {
   createdAt: string
   updatedAt: string
   completedAt: string | null
+  isTimeSensitive: boolean
+  timeConstraint: string | null
   User: {
     id: string
     name: string
@@ -68,6 +69,8 @@ export default function QuestsPage() {
     priority: 'normal',
     isPublic: false,
     reward: '',
+    isTimeSensitive: false,
+    timeConstraint: '',
   })
 
   useEffect(() => {
@@ -97,6 +100,8 @@ export default function QuestsPage() {
       priority: 'normal',
       isPublic: false,
       reward: '',
+      isTimeSensitive: false,
+      timeConstraint: '',
     })
     setIsDialogOpen(false)
     fetchQuests()
@@ -196,22 +201,15 @@ export default function QuestsPage() {
             setFormData({ ...formData, type: activeTab })
             setIsDialogOpen(true)
           }}
-          className="bg-green-600 hover:bg-green-700"
-          disabled={activeTab === 'official' && session?.user?.role !== 'dm'}
+          className="bg-stone-700 hover:bg-stone-600 border border-stone-600"
         >
           <Plus className="h-4 w-4 mr-2" />
           {activeTab === 'official' ? 'Add Official Quest' : 'Add Personal Quest'}
         </Button>
       </div>
 
-      {activeTab === 'official' && session?.user?.role !== 'dm' && (
-        <p className="text-center text-xs text-stone-500 mb-6">
-          Only the DM can create official quests
-        </p>
-      )}
-
       {/* Quest Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Active Quests */}
         <div>
           <h2 className="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
@@ -261,33 +259,6 @@ export default function QuestsPage() {
             {filterQuestsByStatus('completed').length === 0 && (
               <Card className="p-6 bg-stone-950/50 border-stone-800 text-center">
                 <p className="text-stone-500 text-sm">No completed quests</p>
-              </Card>
-            )}
-          </div>
-        </div>
-
-        {/* Failed Quests */}
-        <div>
-          <h2 className="text-lg font-bold text-red-400 mb-4 flex items-center gap-2">
-            <X className="h-5 w-5" />
-            Failed ({filterQuestsByStatus('failed').length})
-          </h2>
-          <div className="space-y-3">
-            {filterQuestsByStatus('failed').map(quest => (
-              <QuestCard
-                key={quest.id}
-                quest={quest}
-                currentUserId={session?.user?.id || ''}
-                onStatusChange={updateQuestStatus}
-                onDelete={deleteQuest}
-                onTogglePublic={toggleQuestPublic}
-                getPriorityColor={getPriorityColor}
-                getPriorityIcon={getPriorityIcon}
-              />
-            ))}
-            {filterQuestsByStatus('failed').length === 0 && (
-              <Card className="p-6 bg-stone-950/50 border-stone-800 text-center">
-                <p className="text-stone-500 text-sm">No failed quests</p>
               </Card>
             )}
           </div>
@@ -379,7 +350,37 @@ export default function QuestsPage() {
               </div>
             )}
 
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
+            <div className="flex items-center space-x-2 p-3 bg-slate-900 border border-slate-800 rounded-lg">
+              <Switch
+                id="isTimeSensitive"
+                checked={formData.isTimeSensitive}
+                onCheckedChange={(checked) => setFormData({ ...formData, isTimeSensitive: checked })}
+              />
+              <div className="flex-1">
+                <Label htmlFor="isTimeSensitive" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-amber-400" />
+                  Time Sensitive
+                </Label>
+                <p className="text-xs text-slate-500">
+                  This quest has a time constraint
+                </p>
+              </div>
+            </div>
+
+            {formData.isTimeSensitive && (
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Time Constraint</Label>
+                <Input
+                  value={formData.timeConstraint}
+                  onChange={(e) => setFormData({ ...formData, timeConstraint: e.target.value })}
+                  className="bg-slate-900 border-slate-700"
+                  placeholder="e.g., 3 days, Before full moon, End of session 5"
+                  required={formData.isTimeSensitive}
+                />
+              </div>
+            )}
+
+            <Button type="submit" className="w-full bg-stone-700 hover:bg-stone-600 border border-stone-600">
               <Plus className="h-4 w-4 mr-2" />
               Create Quest
             </Button>
@@ -413,12 +414,11 @@ function QuestCard({
   return (
     <Card className={`p-4 bg-stone-950/90 backdrop-blur-xl border transition-all hover:shadow-lg ${
       quest.status === 'completed' ? 'border-green-900/50 opacity-75' :
-      quest.status === 'failed' ? 'border-red-900/50 opacity-75' :
       'border-stone-800'
     }`}>
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <div className={`flex items-center gap-1 px-2 py-0.5 rounded border text-xs ${getPriorityColor(quest.priority)}`}>
               {getPriorityIcon(quest.priority)}
               <span className="capitalize">{quest.priority}</span>
@@ -429,10 +429,22 @@ function QuestCard({
                 {quest.isPublic ? 'Public' : 'Private'}
               </div>
             )}
+            {quest.isTimeSensitive && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded border text-xs text-red-400 border-red-900">
+                <Clock className="h-3 w-3" />
+                Time Sensitive
+              </div>
+            )}
           </div>
           <h3 className="font-semibold text-stone-100 mb-1">{quest.title}</h3>
           {quest.description && (
             <p className="text-sm text-stone-400 line-clamp-2 mb-2">{quest.description}</p>
+          )}
+          {quest.isTimeSensitive && quest.timeConstraint && (
+            <div className="flex items-center gap-1 text-xs text-red-400 mb-2 bg-red-950/20 p-2 rounded border border-red-900/30">
+              <Clock className="h-3 w-3" />
+              <span className="font-semibold">Deadline:</span> {quest.timeConstraint}
+            </div>
           )}
           {quest.reward && (
             <div className="flex items-center gap-1 text-xs text-amber-400 mb-2">
@@ -449,24 +461,14 @@ function QuestCard({
       {/* Actions */}
       <div className="flex items-center gap-2 mt-3">
         {quest.status === 'active' && (
-          <>
-            <Button
-              size="sm"
-              onClick={() => onStatusChange(quest.id, 'completed')}
-              className="bg-green-600 hover:bg-green-700 text-xs flex-1"
-            >
-              <Check className="h-3 w-3 mr-1" />
-              Complete
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => onStatusChange(quest.id, 'failed')}
-              className="bg-red-600 hover:bg-red-700 text-xs flex-1"
-            >
-              <X className="h-3 w-3 mr-1" />
-              Fail
-            </Button>
-          </>
+          <Button
+            size="sm"
+            onClick={() => onStatusChange(quest.id, 'completed')}
+            className="bg-green-600 hover:bg-green-700 text-xs flex-1"
+          >
+            <Check className="h-3 w-3 mr-1" />
+            Complete
+          </Button>
         )}
         {quest.status !== 'active' && (
           <Button
