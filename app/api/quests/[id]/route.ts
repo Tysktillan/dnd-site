@@ -29,7 +29,18 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const updateData: any = {
+    type UpdateData = {
+      updatedAt: Date;
+      title?: string;
+      description?: string | null;
+      status?: string;
+      priority?: string;
+      isPublic?: boolean;
+      reward?: string | null;
+      completedAt?: Date | null;
+    };
+
+    const updateData: UpdateData = {
       updatedAt: new Date(),
     };
 

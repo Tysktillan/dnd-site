@@ -13,7 +13,16 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type'); // 'official' or 'personal'
 
     // Build where clause based on type and user role
-    const where: any = {};
+    type WhereClause = {
+      type?: string;
+      OR?: Array<{
+        createdBy?: string;
+        type?: string;
+        isPublic?: boolean;
+      }>;
+    };
+
+    const where: WhereClause = {};
 
     if (type === 'official') {
       // Official quests - visible to all
