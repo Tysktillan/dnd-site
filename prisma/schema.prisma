@@ -240,4 +240,21 @@ model User {
   secondaryPlayerId String?  @unique
   player            Player?  @relation("UserPrimaryPlayer", fields: [playerId], references: [id])
   secondaryPlayer   Player?  @relation("UserSecondaryPlayer", fields: [secondaryPlayerId], references: [id])
+  Quest             Quest[]
+}
+
+model Quest {
+  id          String   @id
+  title       String
+  description String?
+  type        String   @default("personal") // "official" or "personal"
+  status      String   @default("active") // "active", "completed", "failed"
+  priority    String   @default("normal") // "low", "normal", "high", "urgent"
+  isPublic    Boolean  @default(false) // For personal quests: public = visible to all, private = only creator
+  reward      String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  completedAt DateTime?
+  User        User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 }

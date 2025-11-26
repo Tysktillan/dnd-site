@@ -20,7 +20,8 @@ import {
   Sparkles,
   Video,
   Newspaper,
-  X
+  X,
+  Scroll
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,7 @@ import { Button } from '@/components/ui/button'
 const dmNavigation = [
   { name: 'Dashboard', href: '/', icon: Home },
   { name: 'Players', href: '/players', icon: Users },
+  { name: 'Quest Board', href: '/quests', icon: Scroll },
   { name: 'Magical Items', href: '/items', icon: Sparkles },
   { name: 'News', href: '/news', icon: Newspaper },
   { name: 'Campaigns', href: '/campaigns', icon: BookOpen },
@@ -41,6 +43,7 @@ const dmNavigation = [
 
 const playerNavigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Quest Board', href: '/quests', icon: Scroll },
   { name: 'Character', href: '/character', icon: UserIcon },
 ]
 
