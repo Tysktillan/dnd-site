@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -163,7 +164,7 @@ export default function QuestsPage() {
   }
 
   const deleteQuest = async (questId: string) => {
-    if (confirm('Delete this quest?')) {
+    if (confirm('Ta bort detta uppdrag?')) {
       await fetch(`/api/quests/${questId}`, { method: 'DELETE' })
       fetchQuests()
     }
@@ -214,7 +215,7 @@ export default function QuestsPage() {
               <Scroll className="h-10 w-10 text-amber-300" />
               <h1 className="text-3xl md:text-4xl font-black tracking-tight" style={{ fontFamily: 'serif' }}>
                 <span className="text-amber-100 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                  QUEST BOARD
+                  UPPDRAGSTAVLA
                 </span>
               </h1>
               <Scroll className="h-10 w-10 text-amber-300" />
@@ -235,7 +236,7 @@ export default function QuestsPage() {
           }
         >
           <Crown className="h-4 w-4 mr-2" />
-          Official Quests
+          Officiella Uppdrag
         </Button>
         <Button
           onClick={() => setActiveTab('personal')}
@@ -246,7 +247,7 @@ export default function QuestsPage() {
           }
         >
           <UserIcon className="h-4 w-4 mr-2" />
-          Personal Quests
+          Personliga Uppdrag
         </Button>
       </div>
 
@@ -276,7 +277,7 @@ export default function QuestsPage() {
                 className="bg-gradient-to-b from-stone-700 to-stone-900 hover:from-stone-600 hover:to-stone-800 border-2 border-stone-600 shadow-lg text-amber-100"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Post New Quest
+                Lägg till Uppdrag
               </Button>
             </div>
 
@@ -302,8 +303,8 @@ export default function QuestsPage() {
             {filterQuestsByStatus('active').length === 0 && (
               <div className="text-center py-12">
                 <Scroll className="h-16 w-16 mx-auto text-stone-700 mb-4" />
-                <p className="text-stone-500 text-lg font-serif italic">The board stands empty...</p>
-                <p className="text-stone-600 text-sm mt-2">No active quests at this time</p>
+                <p className="text-stone-500 text-lg font-serif italic">Tavlan står tom...</p>
+                <p className="text-stone-600 text-sm mt-2">Inga aktiva uppdrag just nu</p>
               </div>
             )}
 
@@ -319,7 +320,7 @@ export default function QuestsPage() {
                     {showCompleted ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                     <Check className="h-5 w-5 text-green-500" />
                     <span className="font-semibold">
-                      Completed Quests ({filterQuestsByStatus('completed').length})
+                      Avslutade Uppdrag ({filterQuestsByStatus('completed').length})
                     </span>
                     {showCompleted ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
                   </div>
@@ -373,40 +374,40 @@ export default function QuestsPage() {
         <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {activeTab === 'official' ? 'Add Official Quest' : 'Add Personal Quest'}
+              {activeTab === 'official' ? 'Lägg till Officiellt Uppdrag' : 'Lägg till Personligt Uppdrag'}
             </DialogTitle>
             <DialogDescription className="text-slate-400">
               {activeTab === 'official'
-                ? 'Create a quest for all players in the campaign'
-                : 'Create a personal quest or to-do item'}
+                ? 'Skapa ett uppdrag för alla spelare i kampanjen'
+                : 'Skapa ett personligt uppdrag eller att-göra-punkt'}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddQuest} className="space-y-4">
             <div>
-              <Label className="text-sm font-medium mb-2 block">Title</Label>
+              <Label className="text-sm font-medium mb-2 block">Rubrik</Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="bg-slate-900 border-slate-700"
-                placeholder="Enter quest title..."
+                placeholder="Ange uppdragsrubrik..."
                 required
                 autoFocus
               />
             </div>
 
             <div>
-              <Label className="text-sm font-medium mb-2 block">Description</Label>
+              <Label className="text-sm font-medium mb-2 block">Beskrivning</Label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="bg-slate-900 border-slate-700 min-h-[100px]"
-                placeholder="Quest details and objectives..."
+                placeholder="Uppdragsdetaljer och mål..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-medium mb-2 block">Priority</Label>
+                <Label className="text-sm font-medium mb-2 block">Prioritet</Label>
                 <Select
                   value={formData.priority}
                   onValueChange={(value) => setFormData({ ...formData, priority: value })}
@@ -415,21 +416,21 @@ export default function QuestsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="low">Låg</SelectItem>
                     <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="high">Hög</SelectItem>
+                    <SelectItem value="urgent">Brådskande</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label className="text-sm font-medium mb-2 block">Reward (optional)</Label>
+                <Label className="text-sm font-medium mb-2 block">Belöning (valfritt)</Label>
                 <Input
                   value={formData.reward}
                   onChange={(e) => setFormData({ ...formData, reward: e.target.value })}
                   className="bg-slate-900 border-slate-700"
-                  placeholder="e.g., 100 GP, Magic Item"
+                  placeholder="t.ex. 100 GM, Magiskt Föremål"
                 />
               </div>
             </div>
@@ -444,10 +445,10 @@ export default function QuestsPage() {
                 <div className="flex-1">
                   <Label htmlFor="isPublic" className="text-sm font-medium cursor-pointer flex items-center gap-2">
                     {formData.isPublic ? <Eye className="h-4 w-4 text-green-400" /> : <EyeOff className="h-4 w-4 text-stone-500" />}
-                    {formData.isPublic ? 'Public' : 'Private'}
+                    {formData.isPublic ? 'Offentlig' : 'Privat'}
                   </Label>
                   <p className="text-xs text-slate-500">
-                    {formData.isPublic ? 'Visible to all players' : 'Only visible to you'}
+                    {formData.isPublic ? 'Synlig för alla spelare' : 'Endast synlig för dig'}
                   </p>
                 </div>
               </div>
@@ -462,40 +463,40 @@ export default function QuestsPage() {
               <div className="flex-1">
                 <Label htmlFor="isTimeSensitive" className="text-sm font-medium cursor-pointer flex items-center gap-2">
                   <Clock className="h-4 w-4 text-amber-400" />
-                  Time Sensitive
+                  Tidskänslig
                 </Label>
                 <p className="text-xs text-slate-500">
-                  This quest has a time constraint
+                  Detta uppdrag har en tidsbegränsning
                 </p>
               </div>
             </div>
 
             {formData.isTimeSensitive && (
               <div>
-                <Label className="text-sm font-medium mb-2 block">Deadline (Campaign Day)</Label>
+                <Label className="text-sm font-medium mb-2 block">Deadline (Kampanjdag)</Label>
                 <Input
                   type="number"
                   min="1"
                   value={formData.deadlineDay}
                   onChange={(e) => setFormData({ ...formData, deadlineDay: e.target.value })}
                   className="bg-slate-900 border-slate-700"
-                  placeholder="e.g., 10"
+                  placeholder="t.ex. 10"
                   required={formData.isTimeSensitive}
                 />
                 <p className="text-xs text-slate-500 mt-1">
-                  Enter the campaign day number when this quest must be completed
+                  Ange kampanjdagsnumret då detta uppdrag måste vara slutfört
                 </p>
               </div>
             )}
 
             <Button type="submit" className="w-full bg-stone-700 hover:bg-stone-600 border border-stone-600">
               <Plus className="h-4 w-4 mr-2" />
-              Create Quest
+              Skapa Uppdrag
             </Button>
           </form>
         </DialogContent>
-      </Dialog>
-    </div>
+      </Dialog >
+    </div >
   )
 }
 
@@ -549,7 +550,7 @@ function QuestParchment({
         {isCompleted && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 rotate-12">
             <div className="border-4 border-green-700 rounded-lg px-6 py-2 opacity-40">
-              <span className="text-3xl font-black text-green-700">COMPLETE</span>
+              <span className="text-3xl font-black text-green-700">KLAR</span>
             </div>
           </div>
         )}
@@ -592,19 +593,18 @@ function QuestParchment({
 
           {/* Time Constraint */}
           {quest.isTimeSensitive && quest.deadlineDay && (
-            <div className={`flex items-center gap-2 text-xs mb-3 px-3 py-2 rounded ${
-              quest.deadlineDay <= currentDay
-                ? 'bg-gradient-to-r from-red-950 to-red-900 text-red-100 border border-red-800 shadow-[0_0_10px_rgba(153,27,27,0.5)]'
-                : quest.deadlineDay - currentDay <= 2
-                  ? 'bg-gradient-to-r from-orange-950 to-orange-900 text-orange-100 border border-orange-800 shadow-[0_0_8px_rgba(154,52,18,0.4)]'
-                  : 'bg-gradient-to-r from-stone-800 to-stone-700 text-stone-200 border border-stone-600'
-            }`}>
+            <div className={`flex items-center gap-2 text-xs mb-3 px-3 py-2 rounded ${quest.deadlineDay <= currentDay
+              ? 'bg-gradient-to-r from-red-950 to-red-900 text-red-100 border border-red-800 shadow-[0_0_10px_rgba(153,27,27,0.5)]'
+              : quest.deadlineDay - currentDay <= 2
+                ? 'bg-gradient-to-r from-orange-950 to-orange-900 text-orange-100 border border-orange-800 shadow-[0_0_8px_rgba(154,52,18,0.4)]'
+                : 'bg-gradient-to-r from-stone-800 to-stone-700 text-stone-200 border border-stone-600'
+              }`}>
               <Clock className="h-4 w-4 flex-shrink-0" />
               <div className="font-medium italic" style={{ fontFamily: 'serif' }}>
                 {quest.deadlineDay <= currentDay ? (
-                  <span className="font-bold tracking-wide">OVERDUE</span>
+                  <span className="font-bold tracking-wide">FÖRSENAD</span>
                 ) : (
-                  <span>{quest.deadlineDay - currentDay} {quest.deadlineDay - currentDay === 1 ? 'day' : 'days'} remaining</span>
+                  <span>{quest.deadlineDay - currentDay} {quest.deadlineDay - currentDay === 1 ? 'dag' : 'dagar'} kvar</span>
                 )}
               </div>
             </div>
@@ -614,14 +614,14 @@ function QuestParchment({
           {quest.reward && (
             <div className="flex items-center gap-2 text-sm text-amber-900 mb-3 bg-amber-100 p-2 rounded border-2 border-amber-300">
               <Trophy className="h-4 w-4 text-amber-600" />
-              <span className="font-bold">Reward:</span>
+              <span className="font-bold">Belöning:</span>
               <span className="font-serif">{quest.reward}</span>
             </div>
           )}
 
           {/* Footer */}
           <div className="flex items-center justify-between text-xs text-stone-600 mb-3 italic" style={{ fontFamily: 'serif' }}>
-            <span>Posted by {quest.User.name}</span>
+            <span>Publicerad av {quest.User.name}</span>
             <span>{new Date(quest.createdAt).toLocaleDateString()}</span>
           </div>
 
@@ -633,7 +633,7 @@ function QuestParchment({
             className="w-full mb-2 text-stone-700 hover:text-stone-900 hover:bg-amber-100 border border-amber-900/20"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
-            {commentCount === 0 ? 'Add Comment' : `${commentCount} Comment${commentCount !== 1 ? 's' : ''}`}
+            {commentCount === 0 ? 'Lägg till Kommentar' : `${commentCount} Kommentar${commentCount !== 1 ? 'er' : ''}`}
           </Button>
 
           {/* Actions - Only show on hover for cleaner look */}
@@ -645,7 +645,7 @@ function QuestParchment({
                 className="bg-gradient-to-b from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-xs flex-1 text-white border-2 border-green-800"
               >
                 <Check className="h-3 w-3 mr-1" />
-                Complete
+                Slutför
               </Button>
             )}
             {quest.status !== 'active' && (
@@ -654,7 +654,7 @@ function QuestParchment({
                 onClick={() => onStatusChange(quest.id, 'active')}
                 className="bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-xs flex-1 text-white border-2 border-blue-800"
               >
-                Reactivate
+                Återaktivera
               </Button>
             )}
             {isOwner && quest.type === 'personal' && (
@@ -749,7 +749,7 @@ function QuestDetailsModal({
   }
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!confirm('Delete this comment?')) return
+    if (!confirm('Ta bort denna kommentar?')) return
 
     const res = await fetch(`/api/quests/${quest.id}/comments?commentId=${commentId}`, {
       method: 'DELETE'
@@ -809,19 +809,18 @@ function QuestDetailsModal({
             )}
 
             {quest.isTimeSensitive && quest.deadlineDay && (
-              <div className={`flex items-center gap-2 text-sm mb-3 px-4 py-3 rounded ${
-                quest.deadlineDay <= currentDay
-                  ? 'bg-gradient-to-r from-red-950 to-red-900 text-red-100 border border-red-800 shadow-[0_0_12px_rgba(153,27,27,0.6)]'
-                  : quest.deadlineDay - currentDay <= 2
-                    ? 'bg-gradient-to-r from-orange-950 to-orange-900 text-orange-100 border border-orange-800 shadow-[0_0_10px_rgba(154,52,18,0.5)]'
-                    : 'bg-gradient-to-r from-stone-800 to-stone-700 text-stone-200 border border-stone-600'
-              }`}>
+              <div className={`flex items-center gap-2 text-sm mb-3 px-4 py-3 rounded ${quest.deadlineDay <= currentDay
+                ? 'bg-gradient-to-r from-red-950 to-red-900 text-red-100 border border-red-800 shadow-[0_0_12px_rgba(153,27,27,0.6)]'
+                : quest.deadlineDay - currentDay <= 2
+                  ? 'bg-gradient-to-r from-orange-950 to-orange-900 text-orange-100 border border-orange-800 shadow-[0_0_10px_rgba(154,52,18,0.5)]'
+                  : 'bg-gradient-to-r from-stone-800 to-stone-700 text-stone-200 border border-stone-600'
+                }`}>
                 <Clock className="h-5 w-5 flex-shrink-0" />
                 <div className="font-medium italic text-base" style={{ fontFamily: 'serif' }}>
                   {quest.deadlineDay <= currentDay ? (
-                    <span className="font-bold tracking-wide">OVERDUE</span>
+                    <span className="font-bold tracking-wide">FÖRSENAD</span>
                   ) : (
-                    <span>{quest.deadlineDay - currentDay} {quest.deadlineDay - currentDay === 1 ? 'day' : 'days'} remaining</span>
+                    <span>{quest.deadlineDay - currentDay} {quest.deadlineDay - currentDay === 1 ? 'dag' : 'dagar'} kvar</span>
                   )}
                 </div>
               </div>
@@ -830,7 +829,7 @@ function QuestDetailsModal({
             {quest.reward && (
               <div className="flex items-center gap-2 text-sm text-amber-900 mb-3 bg-amber-100 p-3 rounded border-2 border-amber-300">
                 <Trophy className="h-5 w-5 text-amber-600" />
-                <span className="font-bold">Reward:</span>
+                <span className="font-bold">Belöning:</span>
                 <span className="font-serif">{quest.reward}</span>
               </div>
             )}
@@ -845,7 +844,7 @@ function QuestDetailsModal({
                   className="text-stone-700 hover:text-stone-900 hover:bg-amber-200/50"
                 >
                   {quest.isPublic ? <Eye className="h-4 w-4 mr-1" /> : <EyeOff className="h-4 w-4 mr-1" />}
-                  {quest.isPublic ? 'Make Private' : 'Make Public'}
+                  {quest.isPublic ? 'Gör Privat' : 'Gör Offentlig'}
                 </Button>
               </div>
             )}
@@ -855,7 +854,7 @@ function QuestDetailsModal({
           <div className="border-t-2 border-amber-900/40 pt-6">
             <h3 className="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2" style={{ fontFamily: 'serif' }}>
               <MessageCircle className="h-5 w-5 text-amber-700" />
-              Discussion ({comments.length})
+              Diskussion ({comments.length})
             </h3>
 
             {/* Comment Form */}
@@ -863,7 +862,7 @@ function QuestDetailsModal({
               <Textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Share your thoughts on this quest..."
+                placeholder="Dela dina tankar om detta uppdrag..."
                 className="bg-white border-2 border-amber-900/30 text-stone-900 min-h-[80px] mb-2 focus:border-amber-600"
                 style={{ fontFamily: 'serif' }}
               />
@@ -873,7 +872,7 @@ function QuestDetailsModal({
                 className="bg-gradient-to-b from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-2 border-amber-900"
               >
                 <Send className="h-4 w-4 mr-2" />
-                {isSubmitting ? 'Posting...' : 'Post Comment'}
+                {isSubmitting ? 'Publicerar...' : 'Publicera Kommentar'}
               </Button>
             </form>
 
@@ -881,7 +880,7 @@ function QuestDetailsModal({
             <div className="space-y-4">
               {comments.length === 0 ? (
                 <div className="text-center py-8 text-stone-500 italic" style={{ fontFamily: 'serif' }}>
-                  No comments yet. Be the first to share your thoughts!
+                  Inga kommentarer än. Var den första att dela dina tankar!
                 </div>
               ) : (
                 comments.map((comment) => {
@@ -894,25 +893,12 @@ function QuestDetailsModal({
                         {/* Avatar */}
                         <div className="flex-shrink-0">
                           {avatarUrl ? (
-                            <img
+                            <Image
                               src={avatarUrl}
                               alt={comment.User.name}
-                              className="w-10 h-10 rounded-full object-cover border-2 border-amber-900/30"
-                              onError={(e) => {
-                                console.log('Image failed to load:', avatarUrl)
-                                // Hide the broken image and show default icon
-                                e.currentTarget.style.display = 'none'
-                                const parent = e.currentTarget.parentElement
-                                if (parent) {
-                                  parent.innerHTML = `
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-stone-300 to-stone-400 border-2 border-amber-900/30 flex items-center justify-center">
-                                      <svg class="h-6 w-6 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                      </svg>
-                                    </div>
-                                  `
-                                }
-                              }}
+                              width={40}
+                              height={40}
+                              className="rounded-full object-cover border-2 border-amber-900/30"
                             />
                           ) : (
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-stone-300 to-stone-400 border-2 border-amber-900/30 flex items-center justify-center">
@@ -959,7 +945,7 @@ function QuestDetailsModal({
                 className="bg-gradient-to-b from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-2 border-green-900"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                Mark Complete
+                Markera som Klar
               </Button>
             )}
             {quest.status === 'completed' && (
@@ -968,7 +954,7 @@ function QuestDetailsModal({
                 className="bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-2 border-blue-900"
               >
                 <RotateCcw className="h-4 w-4 mr-2" />
-                Reactivate
+                Återaktivera
               </Button>
             )}
             <Button
@@ -977,7 +963,7 @@ function QuestDetailsModal({
               className="bg-gradient-to-b from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-2 border-red-900"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              Ta Bort
             </Button>
           </div>
         </div>

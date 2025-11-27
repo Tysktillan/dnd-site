@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Music, Image as ImageIcon, Search, Check } from 'lucide-react'
+import Image from 'next/image'
 import {
   Dialog,
   DialogContent,
@@ -153,16 +154,14 @@ export default function AssetPicker({ type, open, onClose, onSelect, selectedIds
                   <button
                     key={asset.id}
                     onClick={() => toggleSelection(asset.id)}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      isSelected
-                        ? 'border-purple-500 bg-purple-900/20'
-                        : 'border-slate-700 bg-slate-900 hover:border-slate-600'
-                    }`}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${isSelected
+                      ? 'border-purple-500 bg-purple-900/20'
+                      : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                      }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isSelected ? 'bg-purple-600' : 'bg-green-900/30'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isSelected ? 'bg-purple-600' : 'bg-green-900/30'
+                        }`}>
                         {isSelected ? (
                           <Check className="h-5 w-5 text-white" />
                         ) : (
@@ -198,18 +197,20 @@ export default function AssetPicker({ type, open, onClose, onSelect, selectedIds
                   <button
                     key={asset.id}
                     onClick={() => toggleSelection(asset.id)}
-                    className={`rounded-lg border-2 transition-all overflow-hidden ${
-                      isSelected
-                        ? 'border-purple-500 ring-2 ring-purple-500'
-                        : 'border-slate-700 hover:border-slate-600'
-                    }`}
+                    className={`rounded-lg border-2 transition-all overflow-hidden ${isSelected
+                      ? 'border-purple-500 ring-2 ring-purple-500'
+                      : 'border-slate-700 hover:border-slate-600'
+                      }`}
                   >
                     <div className="relative aspect-square">
-                      <img
-                        src={asset.url}
-                        alt={asset.name}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={asset.url}
+                          alt={asset.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                       {isSelected && (
                         <div className="absolute inset-0 bg-purple-600/40 flex items-center justify-center">
                           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">

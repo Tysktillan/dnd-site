@@ -55,14 +55,14 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid credentials. The mists reject your passage.')
+        setError('Ogiltiga uppgifter. Dimmorna nekar dig inträde.')
       } else {
         router.push('/')
         router.refresh()
       }
     } catch (err: unknown) {
       console.error(err)
-      setError('An error occurred. Please try again.')
+      setError('Ett fel uppstod. Försök igen.')
     } finally {
       setLoading(false)
     }
@@ -145,7 +145,7 @@ export default function LoginPage() {
               </h1>
             </div>
             <div className="space-y-2">
-              <p className="text-stone-400 text-sm tracking-[0.3em] uppercase font-light">Campaign Manager</p>
+              <p className="text-stone-400 text-sm tracking-[0.3em] uppercase font-light">Kampanjhanterare</p>
               <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-red-900/50 to-transparent"></div>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 {/* Username Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-stone-400 uppercase tracking-wider">
-                    Identity
+                    Identitet
                   </label>
                   <div className="relative">
                     <Input
@@ -176,7 +176,7 @@ export default function LoginPage() {
                         transition-all duration-300
                         ${focused === 'username' ? 'shadow-lg shadow-red-950/20' : ''}
                       `}
-                      placeholder="Enter your identity..."
+                      placeholder="Ange din identitet..."
                       required
                       disabled={loading}
                     />
@@ -191,7 +191,7 @@ export default function LoginPage() {
                 {/* Password Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-stone-400 uppercase tracking-wider">
-                    Passphrase
+                    Lösenord
                   </label>
                   <div className="relative">
                     <Input
@@ -207,7 +207,7 @@ export default function LoginPage() {
                         transition-all duration-300
                         ${focused === 'password' ? 'shadow-lg shadow-red-950/20' : ''}
                       `}
-                      placeholder="Speak the words..."
+                      placeholder="Ange lösenord..."
                       required
                       disabled={loading}
                     />
@@ -240,11 +240,11 @@ export default function LoginPage() {
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-stone-400/30 border-t-stone-200 rounded-full animate-spin"></div>
-                        <span>Entering...</span>
+                        <span>Går in...</span>
                       </>
                     ) : (
                       <>
-                        <span>Enter Barovia</span>
+                        <span>Gå in i Barovia</span>
                         <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -259,7 +259,7 @@ export default function LoginPage() {
           {/* Bottom Quote */}
           <div className="mt-10 text-center select-none">
             <p className="text-stone-700 text-sm italic font-serif">
-              &quot;The Devil Strahd awaits in the shadows...&quot;
+              &quot;Djävulen Strahd väntar i skuggorna...&quot;
             </p>
           </div>
         </div>

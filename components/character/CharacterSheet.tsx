@@ -16,13 +16,11 @@ import {
 } from "@/components/ui/select";
 import {
   Heart,
-  Shield,
   Zap,
   User,
   BookOpen,
   Save,
   Loader2,
-  Sparkles,
   X
 } from "lucide-react";
 import { Player } from "@prisma/client";
@@ -36,11 +34,7 @@ interface CharacterSheetProps {
   secondaryCharacter?: Player | null;
 }
 
-interface DndClass {
-  index: string;
-  name: string;
-  url: string;
-}
+
 
 interface Subclass {
   index: string;
@@ -64,24 +58,24 @@ const DND_CLASSES = [
 ];
 
 const DND_SKILLS = [
-  { name: 'Acrobatics', ability: 'dexterity' },
-  { name: 'Animal Handling', ability: 'wisdom' },
-  { name: 'Arcana', ability: 'intelligence' },
-  { name: 'Athletics', ability: 'strength' },
-  { name: 'Deception', ability: 'charisma' },
-  { name: 'History', ability: 'intelligence' },
-  { name: 'Insight', ability: 'wisdom' },
+  { name: 'Akrobatik', ability: 'dexterity' },
+  { name: 'Djurhantering', ability: 'wisdom' },
+  { name: 'Arkana', ability: 'intelligence' },
+  { name: 'Atletik', ability: 'strength' },
+  { name: 'Bedrägeri', ability: 'charisma' },
+  { name: 'Historia', ability: 'intelligence' },
+  { name: 'Insikt', ability: 'wisdom' },
   { name: 'Intimidation', ability: 'charisma' },
-  { name: 'Investigation', ability: 'intelligence' },
-  { name: 'Medicine', ability: 'wisdom' },
-  { name: 'Nature', ability: 'intelligence' },
+  { name: 'Undersökning', ability: 'intelligence' },
+  { name: 'Medicin', ability: 'wisdom' },
+  { name: 'Natur', ability: 'intelligence' },
   { name: 'Perception', ability: 'wisdom' },
-  { name: 'Performance', ability: 'charisma' },
-  { name: 'Persuasion', ability: 'charisma' },
+  { name: 'Uppträdande', ability: 'charisma' },
+  { name: 'Övertalning', ability: 'charisma' },
   { name: 'Religion', ability: 'intelligence' },
-  { name: 'Sleight of Hand', ability: 'dexterity' },
-  { name: 'Stealth', ability: 'dexterity' },
-  { name: 'Survival', ability: 'wisdom' },
+  { name: 'Fingerfärdighet', ability: 'dexterity' },
+  { name: 'Smyga', ability: 'dexterity' },
+  { name: 'Överlevnad', ability: 'wisdom' },
 ];
 
 interface Equipment {
@@ -103,13 +97,12 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
   const [saveMessage, setSaveMessage] = useState('');
   const [subclasses, setSubclasses] = useState<Subclass[]>([]);
   const [subclasses2, setSubclasses2] = useState<Subclass[]>([]);
-  const [loadingSubclasses, setLoadingSubclasses] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
 
   const filteredSkills = skillSearch
     ? DND_SKILLS.filter(skill =>
-        skill.name.toLowerCase().includes(skillSearch.toLowerCase())
-      )
+      skill.name.toLowerCase().includes(skillSearch.toLowerCase())
+    )
     : [];
 
   const handleCharacterSwitch = (characterId: string) => {
@@ -130,15 +123,12 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
       const classIndex = DND_CLASSES.find(c => c.name.toLowerCase() === character.className?.toLowerCase())?.index;
       if (!classIndex) return;
 
-      setLoadingSubclasses(true);
       try {
         const res = await fetch(`https://www.dnd5eapi.co/api/classes/${classIndex}`);
         const data = await res.json();
         setSubclasses(data.subclasses || []);
       } catch (error) {
         console.error('Failed to fetch subclasses:', error);
-      } finally {
-        setLoadingSubclasses(false);
       }
     };
 
@@ -195,13 +185,13 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save character');
+        throw new Error('Misslyckades att spara karaktär');
       }
 
-      setSaveMessage('Character saved successfully!');
+      setSaveMessage('Karaktär sparad!');
       setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
-      setSaveMessage('Failed to save character');
+      setSaveMessage('Misslyckades att spara karaktär');
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -243,12 +233,12 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             {isSaving ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
+                Sparar...
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Save Character
+                Spara Karaktär
               </>
             )}
           </Button>
@@ -302,10 +292,10 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
           <Card className="p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900">
             <h2 className="text-lg font-bold text-stone-200 mb-4 flex items-center gap-2">
               <Heart className="h-5 w-5 text-red-400" />
-              Core Stats
+              Stats
             </h2>
             <div className="space-y-4">
-                            <div>
+              <div>
                 <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Max HP</Label>
                 <NumberInput
                   value={character.maxHp ?? 0}
@@ -315,7 +305,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                 />
               </div>
               <div>
-                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Current HP</Label>
+                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Nuvarande HP</Label>
                 <NumberInput
                   value={character.currentHp ?? character.maxHp ?? 0}
                   onChange={(e) => updateField('currentHp', parseInt(e.target.value) || 0)}
@@ -324,7 +314,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                 />
               </div>
               <div>
-                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Armor Class</Label>
+                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">AC</Label>
                 <NumberInput
                   value={character.armorClass ?? 10}
                   onChange={(e) => updateField('armorClass', parseInt(e.target.value) || 10)}
@@ -360,7 +350,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-stone-200 flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-red-400" />
-                Skill Proficiencies
+                Skills
               </h2>
               <div className="flex items-center gap-2">
                 <Label className="text-xs text-stone-400">Jack of All Trades</Label>
@@ -374,7 +364,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             {/* Search Bar */}
             <div className="relative mb-4">
               <Input
-                placeholder="Search skills..."
+                placeholder="Sök skills..."
                 value={skillSearch}
                 onChange={(e) => setSkillSearch(e.target.value)}
                 className="bg-stone-900 border-stone-800 text-stone-100"
@@ -397,9 +387,8 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                           }
                           setSkillSearch('');
                         }}
-                        className={`p-2 cursor-pointer hover:bg-stone-800 transition-colors flex items-center justify-between ${
-                          isProficient ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                        className={`p-2 cursor-pointer hover:bg-stone-800 transition-colors flex items-center justify-between ${isProficient ? 'opacity-50 cursor-not-allowed' : ''
+                          }`}
                       >
                         <span className="text-sm text-stone-300">{skill.name}</span>
                         <span className="text-xs text-stone-500 uppercase">{skill.ability.slice(0, 3)}</span>
@@ -418,7 +407,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                 if (proficientSkills.length === 0) {
                   return (
                     <div className="text-sm text-stone-500 text-center py-4">
-                      No skill proficiencies selected
+                      Inga färdigheter valda
                     </div>
                   );
                 }
@@ -480,11 +469,11 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-stone-200 flex items-center gap-2">
                 <User className="h-5 w-5 text-red-400" />
-                Character Info
+                Karaktärsinfo
               </h2>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-stone-400">
-                  Multiclass
+                  Multiklass
                 </span>
                 <Switch
                   checked={!!(character.className2 && character.className2.length > 0)}
@@ -503,7 +492,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
             </div>
             <div className="space-y-4">
               <div>
-                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Name</Label>
+                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Namn</Label>
                 <Input
                   value={character.name}
                   onChange={(e) => updateField('name', e.target.value)}
@@ -512,13 +501,13 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
               </div>
               <div className="grid grid-cols-12 gap-2">
                 <div className="col-span-4">
-                  <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Class</Label>
+                  <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Klass</Label>
                   <Select
                     value={character.className ?? ''}
                     onValueChange={(value) => updateField('className', value)}
                   >
                     <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
-                      <SelectValue placeholder="Select class" />
+                      <SelectValue placeholder="Välj klass" />
                     </SelectTrigger>
                     <SelectContent className="bg-stone-900 border-stone-800">
                       {DND_CLASSES.map((cls) => (
@@ -531,17 +520,17 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                 </div>
                 {character.className && subclasses.length > 0 && (
                   <div className="col-span-5">
-                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subclass</Label>
+                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subklass</Label>
                     <Select
-                      value={character.subclass ?? undefined}
-                      onValueChange={(value) => updateField('subclass', value === 'none' ? null : value)}
+                      value={character.subclass ?? 'none'}
+                      onValueChange={(value) => updateField('subclass', value === 'none' ? '' : value)}
                     >
                       <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
-                        <SelectValue placeholder="Subclass" />
+                        <SelectValue placeholder="Subklass" />
                       </SelectTrigger>
                       <SelectContent className="bg-stone-900 border-stone-800">
                         <SelectItem value="none" className="text-stone-100 focus:bg-stone-800">
-                          None
+                          Ingen
                         </SelectItem>
                         {subclasses.map((subclass) => (
                           <SelectItem key={subclass.index} value={subclass.name} className="text-stone-100 focus:bg-stone-800">
@@ -566,13 +555,13 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
               {(character.className2 && character.className2.length > 0) && (
                 <div className="grid grid-cols-12 gap-2">
                   <div className="col-span-4">
-                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Class 2</Label>
+                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Klass 2</Label>
                     <Select
                       value={character.className2 ?? ''}
                       onValueChange={(value) => updateField('className2', value)}
                     >
                       <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
-                        <SelectValue placeholder="Select class" />
+                        <SelectValue placeholder="Välj klass" />
                       </SelectTrigger>
                       <SelectContent className="bg-stone-900 border-stone-800">
                         {DND_CLASSES.map((cls) => (
@@ -585,17 +574,17 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                   </div>
                   {character.className2 && subclasses2.length > 0 && (
                     <div className="col-span-5">
-                      <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subclass 2</Label>
+                      <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subklass 2</Label>
                       <Select
-                        value={character.subclass2 ?? undefined}
-                        onValueChange={(value) => updateField('subclass2', value === 'none' ? null : value)}
+                        value={character.subclass2 ?? 'none'}
+                        onValueChange={(value) => updateField('subclass2', value === 'none' ? '' : value)}
                       >
                         <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
-                          <SelectValue placeholder="Subclass" />
+                          <SelectValue placeholder="Subklass" />
                         </SelectTrigger>
                         <SelectContent className="bg-stone-900 border-stone-800">
                           <SelectItem value="none" className="text-stone-100 focus:bg-stone-800">
-                            None
+                            Ingen
                           </SelectItem>
                           {subclasses2.map((subclass) => (
                             <SelectItem key={subclass.index} value={subclass.name} className="text-stone-100 focus:bg-stone-800">
@@ -607,7 +596,7 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                     </div>
                   )}
                   <div className={character.className2 && subclasses2.length > 0 ? "col-span-3" : "col-span-8"}>
-                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level 2</Label>
+                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level</Label>
                     <NumberInput
                       value={character.level2 ?? 0}
                       onChange={(e) => updateField('level2', parseInt(e.target.value) || 0)}
@@ -619,11 +608,11 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                 </div>
               )}
               <div>
-                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Race</Label>
+                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Ras</Label>
                 <Input
                   value={character.race ?? ''}
                   onChange={(e) => updateField('race', e.target.value)}
-                  placeholder="e.g., Human, Elf"
+                  placeholder="t.ex. Människa, Alv"
                   className="bg-stone-900 border-stone-800 text-stone-100"
                 />
               </div>
@@ -635,12 +624,12 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
           <Card className="p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900">
             <h2 className="text-lg font-bold text-stone-200 mb-4 flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-red-400" />
-              Notes
+              Anteckningar
             </h2>
             <Textarea
               value={character.notes ?? ''}
               onChange={(e) => updateField('notes', e.target.value)}
-              placeholder="Personal notes, backstory, goals..."
+              placeholder="Personliga anteckningar, bakgrund, mål..."
               rows={12}
               className="bg-stone-900 border-stone-800 text-stone-100 resize-none"
             />

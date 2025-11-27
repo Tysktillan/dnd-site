@@ -61,7 +61,7 @@ export default function CharacterPage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-stone-400">Loading character...</div>
+        <div className="text-stone-400">Laddar karaktär...</div>
       </div>
     );
   }
@@ -70,8 +70,8 @@ export default function CharacterPage() {
     return (
       <div className="p-4 md:p-6 lg:p-8 max-w-4xl mx-auto">
         <div className="text-center py-20">
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-stone-200 mb-4">No Character Found</h1>
-          <p className="text-stone-400">Contact your DM to create your character.</p>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-stone-200 mb-4">Ingen Karaktär Hittades</h1>
+          <p className="text-stone-400">Kontakta din SL för att skapa din karaktär.</p>
         </div>
       </div>
     );

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MagicalItem } from "@prisma/client"
 import { Plus, Edit, Trash2, Save, X, Sparkles, Upload, Loader2, Eye, EyeOff } from "lucide-react"
+import NextImage from "next/image"
 import { useRouter } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -429,11 +430,13 @@ export default function ItemsManagement({ items: initialItems }: ItemsManagement
                 {/* Preview */}
                 {previewUrl && (
                   <div className="flex items-center gap-3 p-3 bg-black/30 border border-stone-800 rounded-lg">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+
+                    <NextImage
                       src={previewUrl}
                       alt="Preview"
-                      className="w-16 h-16 object-contain rounded border border-stone-700"
+                      width={64}
+                      height={64}
+                      className="object-contain rounded border border-stone-700"
                     />
                     <div className="flex-1">
                       <p className="text-xs text-stone-400">Preview</p>

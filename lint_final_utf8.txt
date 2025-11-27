@@ -1,0 +1,86 @@
+﻿
+> dm-site@0.1.0 lint
+> eslint
+
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\campaigns\[id]\chapters\route.ts
+  22:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\campaigns\[id]\route.ts
+  19:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  39:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  54:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\campaigns\route.ts
+  18:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  35:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\combat\[id]\initiative\[initiativeId]\route.ts
+  21:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  36:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\combat\[id]\route.ts
+  25:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  40:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\combat\route.ts
+  15:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\notes\[id]\route.ts
+  21:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  36:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\notes\route.ts
+  10:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  29:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\planner\[id]\route.ts
+  22:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  37:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\planner\route.ts
+  10:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  30:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\players\route.ts
+  11:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  30:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\quests\[id]\comments\route.ts
+  96:5  warning  'params' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\sounds\[id]\route.ts
+  14:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\api\sounds\route.ts
+  10:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  29:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\apitest\page.tsx
+  63:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\campaigns\[id]\page.tsx
+   8:42  warning  'ChevronDown' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+  50:6   warning  React Hook useEffect has a missing dependency: 'fetchCampaign'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\character\page.tsx
+  10:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\media\page.tsx
+  8:59  warning  'Tag' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\quests\page.tsx
+    6:10  warning  'Card' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  111:6   warning  React Hook useEffect has a missing dependency: 'fetchQuests'. Either include it or remove the dependency array                                                                                                                                                                           react-hooks/exhaustive-deps
+  723:6   warning  React Hook useEffect has a missing dependency: 'fetchComments'. Either include it or remove the dependency array                                                                                                                                                                         react-hooks/exhaustive-deps
+  897:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\app\sessions\page.tsx
+  6:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+C:\Users\jtill\Documents\DND\dm-site-claude\dm-site\lib\auth.ts
+  1:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+
+Ô£û 36 problems (1 error, 35 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+

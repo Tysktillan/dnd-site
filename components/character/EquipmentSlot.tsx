@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import NextImage from "next/image"
 import { cn } from "@/lib/utils"
 
 interface EquipmentSlotProps {
@@ -35,11 +36,11 @@ export function EquipmentSlot({ slot, item, icon, position, onEdit }: EquipmentS
         )}
       >
         {item?.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <NextImage
             src={item.imageUrl}
             alt={item.name}
-            className="w-full h-full object-contain p-1"
+            fill
+            className="object-contain p-1"
           />
         ) : (
           <div className="flex items-center justify-center text-stone-400 hover:text-stone-200 transition-colors">

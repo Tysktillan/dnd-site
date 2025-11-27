@@ -26,17 +26,18 @@ export function SoundboardPanel({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     fetchSoundboardSounds()
+    const currentAudioRefs = audioRefsRef.current
 
     // Poll for updates every 3 seconds
     const interval = setInterval(fetchSoundboardSounds, 3000)
 
     return () => {
       // Clean up all audio instances
-      audioRefsRef.current.forEach((audio) => {
+      currentAudioRefs.forEach((audio) => {
         audio.pause()
         audio.src = ''
       })
-      audioRefsRef.current.clear()
+      currentAudioRefs.clear()
       clearInterval(interval)
     }
   }, [])
@@ -190,10 +191,9 @@ export function SoundboardPanel({ onClose }: { onClose: () => void }) {
           disabled={!sound}
           className={`
             aspect-square rounded border-2 transition-all
-            ${
-              sound
-                ? getCategoryStyle(sound.category, isPlaying)
-                : 'bg-slate-800 border-slate-700 cursor-not-allowed'
+            ${sound
+              ? getCategoryStyle(sound.category, isPlaying)
+              : 'bg-slate-800 border-slate-700 cursor-not-allowed'
             }
           `}
         >

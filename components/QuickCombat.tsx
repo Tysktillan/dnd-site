@@ -74,7 +74,7 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
     }, 2000)
 
     return () => clearInterval(interval)
-  }, [combat])
+  }, [combat]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (isDragging) {
@@ -607,85 +607,84 @@ export function QuickCombat({ onClose }: { onClose: () => void }) {
                 combat.initiatives
                   .sort((a, b) => b.initiativeRoll - a.initiativeRoll)
                   .map((init, index) => {
-                  const currentHp = getCurrentHp(init)
-                  const isDead = currentHp !== null && currentHp <= 0
+                    const currentHp = getCurrentHp(init)
+                    const isDead = currentHp !== null && currentHp <= 0
 
-                  return (
-                    <div
-                      key={init.id}
-                      className={`p-2 rounded-lg border transition-all ${
-                        isDead
-                          ? 'bg-stone-950/50 border-stone-900 opacity-50'
-                          : index === 0
-                          ? 'bg-red-950/30 border-red-900/50 shadow-lg'
-                          : 'bg-stone-900/50 border-stone-800'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs font-bold ${index === 0 ? 'text-red-400' : 'text-stone-500'}`}>
-                              {init.initiativeRoll}
-                            </span>
-                            <span className={`text-sm font-medium truncate ${isDead ? 'line-through text-stone-600' : 'text-stone-200'}`}>
-                              {init.name}
-                              {init.isPlayer && <span className="text-xs text-blue-400 ml-1">(PC)</span>}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3 mt-1">
-                            {init.armorClass !== null && (
-                              <div className="flex items-center gap-1 text-xs text-stone-500">
-                                <Shield className="h-3 w-3" />
-                                {init.armorClass}
-                              </div>
-                            )}
-                            {init.maxHp !== null && (
-                              <div className="flex items-center gap-1 text-xs">
-                                <Heart className={`h-3 w-3 ${isDead ? 'text-stone-700' : 'text-red-400'}`} />
-                                <span className={isDead ? 'text-stone-600' : 'text-stone-400'}>
-                                  {currentHp}/{init.maxHp}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {init.maxHp !== null && (
-                            <div className="flex items-center gap-1">
-                              <Input
-                                type="number"
-                                value={hpInputs[init.id] || ''}
-                                onChange={(e) => setHpInputs({ ...hpInputs, [init.id]: e.target.value })}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    applyHpChange(init)
-                                  }
-                                }}
-                                placeholder="±HP"
-                                className="h-7 w-16 text-xs bg-black/50 border-stone-800 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <Button
-                                size="sm"
-                                onClick={() => applyHpChange(init)}
-                                className="h-7 px-2 text-xs bg-stone-900 hover:bg-stone-800"
-                              >
-                                ✓
-                              </Button>
+                    return (
+                      <div
+                        key={init.id}
+                        className={`p-2 rounded-lg border transition-all ${isDead
+                            ? 'bg-stone-950/50 border-stone-900 opacity-50'
+                            : index === 0
+                              ? 'bg-red-950/30 border-red-900/50 shadow-lg'
+                              : 'bg-stone-900/50 border-stone-800'
+                          }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs font-bold ${index === 0 ? 'text-red-400' : 'text-stone-500'}`}>
+                                {init.initiativeRoll}
+                              </span>
+                              <span className={`text-sm font-medium truncate ${isDead ? 'line-through text-stone-600' : 'text-stone-200'}`}>
+                                {init.name}
+                                {init.isPlayer && <span className="text-xs text-blue-400 ml-1">(PC)</span>}
+                              </span>
                             </div>
-                          )}
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteInitiative(init.id)}
-                            className="h-6 w-6 p-0 hover:bg-red-950/30"
-                          >
-                            <Trash2 className="h-3 w-3 text-red-400" />
-                          </Button>
+                            <div className="flex items-center gap-3 mt-1">
+                              {init.armorClass !== null && (
+                                <div className="flex items-center gap-1 text-xs text-stone-500">
+                                  <Shield className="h-3 w-3" />
+                                  {init.armorClass}
+                                </div>
+                              )}
+                              {init.maxHp !== null && (
+                                <div className="flex items-center gap-1 text-xs">
+                                  <Heart className={`h-3 w-3 ${isDead ? 'text-stone-700' : 'text-red-400'}`} />
+                                  <span className={isDead ? 'text-stone-600' : 'text-stone-400'}>
+                                    {currentHp}/{init.maxHp}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {init.maxHp !== null && (
+                              <div className="flex items-center gap-1">
+                                <Input
+                                  type="number"
+                                  value={hpInputs[init.id] || ''}
+                                  onChange={(e) => setHpInputs({ ...hpInputs, [init.id]: e.target.value })}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      applyHpChange(init)
+                                    }
+                                  }}
+                                  placeholder="±HP"
+                                  className="h-7 w-16 text-xs bg-black/50 border-stone-800 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => applyHpChange(init)}
+                                  className="h-7 px-2 text-xs bg-stone-900 hover:bg-stone-800"
+                                >
+                                  ✓
+                                </Button>
+                              </div>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => deleteInitiative(init.id)}
+                              className="h-6 w-6 p-0 hover:bg-red-950/30"
+                            >
+                              <Trash2 className="h-3 w-3 text-red-400" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })
+                    )
+                  })
               ) : (
                 <p className="text-xs text-stone-600 text-center py-4">No combatants yet</p>
               )}

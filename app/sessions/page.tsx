@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar, Plus, Edit2, Trash2, Play, ChevronUp, ChevronDown, CheckCircle2, Circle, Music, Image as ImageIcon, StickyNote, X, ChevronRight } from 'lucide-react'
@@ -58,7 +60,7 @@ export default function SessionsPage() {
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
   const [isPrepEventDialogOpen, setIsPrepEventDialogOpen] = useState(false)
   const [editingSession, setEditingSession] = useState<Session | null>(null)
-  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
+  // editingEvent state removed as it was unused
   const [formData, setFormData] = useState({
     title: '',
     date: new Date().toISOString().split('T')[0],
@@ -81,10 +83,6 @@ export default function SessionsPage() {
   const [audioAssets, setAudioAssets] = useState<{ [assetId: string]: { id: string; name: string; url: string; category: string; sourceType: string } }>({})
   const audioRefs = useRef<{ [assetId: string]: HTMLAudioElement }>({})
 
-  useEffect(() => {
-    fetchSessions()
-  }, [])
-
   // Get or create a persistent audio element for an asset
   const getAudioElement = (assetId: string, url: string) => {
     if (!audioRefs.current[assetId]) {
@@ -95,30 +93,7 @@ export default function SessionsPage() {
     return audioRefs.current[assetId]
   }
 
-  const fetchSessions = async () => {
-    const response = await fetch('/api/sessions')
-    const data = await response.json()
-
-    // Load timeline for each session to get event counts
-    const sessionsWithTimeline = await Promise.all(
-      data.map(async (session: Session) => {
-        const timelineRes = await fetch(`/api/sessions/${session.id}/timeline`)
-        const timeline = await timelineRes.json()
-        return { ...session, timeline }
-      })
-    )
-
-    console.log('Loaded sessions with timelines:', sessionsWithTimeline)
-    setSessions(sessionsWithTimeline)
-
-    // Check if there's an active session
-    const active = sessionsWithTimeline.find((s: Session) => s.status === 'active')
-    if (active) {
-      loadSessionWithTimeline(active.id)
-    }
-  }
-
-  const loadSessionWithTimeline = async (sessionId: string) => {
+  const loadSessionWithTimeline = useCallback(async (sessionId: string) => {
     const [sessionRes, timelineRes] = await Promise.all([
       fetch(`/api/sessions/${sessionId}`),
       fetch(`/api/sessions/${sessionId}/timeline`)
@@ -158,7 +133,36 @@ export default function SessionsPage() {
     setAssetUrls(urlMap)
     setAudioAssets(audioMap)
     setActiveSession({ ...session, timeline })
-  }
+  }, [])
+
+  const fetchSessions = useCallback(async () => {
+    const response = await fetch('/api/sessions')
+    const data = await response.json()
+
+    // Load timeline for each session to get event counts
+    const sessionsWithTimeline = await Promise.all(
+      data.map(async (session: Session) => {
+        const timelineRes = await fetch(`/api/sessions/${session.id}/timeline`)
+        const timeline = await timelineRes.json()
+        return { ...session, timeline }
+      })
+    )
+
+    console.log('Loaded sessions with timelines:', sessionsWithTimeline)
+    setSessions(sessionsWithTimeline)
+
+    // Check if there's an active session
+    const active = sessionsWithTimeline.find((s: Session) => s.status === 'active')
+    if (active) {
+      loadSessionWithTimeline(active.id)
+    }
+  }, [loadSessionWithTimeline])
+
+  useEffect(() => {
+    fetchSessions()
+  }, [fetchSessions])
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -218,7 +222,7 @@ export default function SessionsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this session?')) {
+    if (confirm('Är du säker på att du vill ta bort detta spelmöte?')) {
       await fetch(`/api/sessions/${id}`, { method: 'DELETE' })
       fetchSessions()
     }
@@ -302,8 +306,8 @@ export default function SessionsPage() {
     newEvents[index].order = newEvents[newIndex].order
     newEvents[newIndex].order = tempOrder
 
-    // Swap positions
-    ;[newEvents[index], newEvents[newIndex]] = [newEvents[newIndex], newEvents[index]]
+      // Swap positions
+      ;[newEvents[index], newEvents[newIndex]] = [newEvents[newIndex], newEvents[index]]
     setPrepEvents(newEvents)
   }
 
@@ -319,7 +323,7 @@ export default function SessionsPage() {
 
   const endSession = async () => {
     if (!activeSession) return
-    if (confirm('End this session and return to prep mode?')) {
+    if (confirm('Avsluta detta spelmöte och återgå till förberedelseläge?')) {
       await fetch(`/api/sessions/${activeSession.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -374,7 +378,7 @@ export default function SessionsPage() {
 
   const deleteTimelineEvent = async (eventId: string) => {
     if (!activeSession) return
-    if (confirm('Delete this timeline event?')) {
+    if (confirm('Ta bort denna tidslinjehändelse?')) {
       await fetch(`/api/sessions/${activeSession.id}/timeline/${eventId}`, {
         method: 'DELETE',
       })
@@ -412,18 +416,7 @@ export default function SessionsPage() {
     loadSessionWithTimeline(activeSession.id)
   }
 
-  const playSounds = (soundUrls: string | null) => {
-    if (!soundUrls) return
-    try {
-      const urls = JSON.parse(soundUrls)
-      urls.forEach((url: string) => {
-        const audio = new Audio(url)
-        audio.play()
-      })
-    } catch (error) {
-      console.error('Failed to play sounds:', error)
-    }
-  }
+
 
   const addEventNote = async (eventId: string) => {
     if (!activeSession || !newNoteContent[eventId]?.trim()) return
@@ -453,38 +446,38 @@ export default function SessionsPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">
-              🎲 Session {activeSession.sessionNumber}: {activeSession.title}
+              🎲 Spelmöte {activeSession.sessionNumber}: {activeSession.title}
             </h1>
-            <p className="text-stone-500">Session in progress</p>
+            <p className="text-stone-500">Spelmöte pågår</p>
           </div>
           <div className="flex gap-2">
             <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-red-950 via-red-900 to-red-950 hover:from-red-900 hover:via-red-800 hover:to-red-900 shadow-lg shadow-red-950/30">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Event
+                  Lägg till Händelse
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-stone-950/95 backdrop-blur-xl text-white border-stone-900">
                 <DialogHeader>
-                  <DialogTitle>Add Timeline Event</DialogTitle>
+                  <DialogTitle>Lägg till Tidslinjehändelse</DialogTitle>
                   <DialogDescription className="text-stone-500">
-                    Add a new event to the session timeline
+                    Lägg till en ny händelse i spelmötestidslinjen
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-stone-400 mb-1 block">Event Title</label>
+                    <label className="text-xs text-stone-400 mb-1 block">Händelserubrik</label>
                     <Input
                       value={eventFormData.title}
                       onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
                       className="bg-black/50 border-stone-900"
-                      placeholder="e.g., Meeting with Fiona Wachter"
+                      placeholder="t.ex. Möte med Fiona Wachter"
                     />
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs text-stone-400 block">Key Details</label>
+                      <label className="text-xs text-stone-400 block">Nyckeldetaljer</label>
                       <Button
                         type="button"
                         size="sm"
@@ -493,7 +486,7 @@ export default function SessionsPage() {
                         className="h-6 text-xs"
                       >
                         <Plus className="h-3 w-3 mr-1" />
-                        Add Detail
+                        Lägg till Detalj
                       </Button>
                     </div>
                     <div className="space-y-2">
@@ -504,7 +497,7 @@ export default function SessionsPage() {
                             value={detail}
                             onChange={(e) => updateKeyDetail(index, e.target.value)}
                             className="bg-black/50 border-stone-900 flex-1"
-                            placeholder="e.g., Lady Wachter wants the party's help"
+                            placeholder="t.ex. Lady Wachter vill ha gruppens hjälp"
                           />
                           {keyDetails.length > 1 && (
                             <Button
@@ -522,7 +515,7 @@ export default function SessionsPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-stone-400 mb-1 block">Audio Assets (optional)</label>
+                    <label className="text-xs text-stone-400 mb-1 block">Ljudtillgångar (valfritt)</label>
                     <Button
                       type="button"
                       onClick={() => setIsAudioPickerOpen(true)}
@@ -531,12 +524,12 @@ export default function SessionsPage() {
                     >
                       <Music className="h-4 w-4 mr-2" />
                       {selectedAudioIds.length > 0
-                        ? `${selectedAudioIds.length} audio asset${selectedAudioIds.length > 1 ? 's' : ''} selected`
-                        : 'Select Audio Assets'}
+                        ? `${selectedAudioIds.length} ljudtillgång${selectedAudioIds.length > 1 ? 'ar' : ''} vald${selectedAudioIds.length > 1 ? 'a' : ''}`
+                        : 'Välj Ljudtillgångar'}
                     </Button>
                   </div>
                   <div>
-                    <label className="text-xs text-stone-400 mb-1 block">Image Assets (optional)</label>
+                    <label className="text-xs text-stone-400 mb-1 block">Bildtillgångar (valfritt)</label>
                     <Button
                       type="button"
                       onClick={() => setIsImagePickerOpen(true)}
@@ -545,8 +538,8 @@ export default function SessionsPage() {
                     >
                       <ImageIcon className="h-4 w-4 mr-2" />
                       {selectedImageIds.length > 0
-                        ? `${selectedImageIds.length} image${selectedImageIds.length > 1 ? 's' : ''} selected`
-                        : 'Select Images'}
+                        ? `${selectedImageIds.length} bild${selectedImageIds.length > 1 ? 'er' : ''} vald${selectedImageIds.length > 1 ? 'a' : ''}`
+                        : 'Välj Bilder'}
                     </Button>
                   </div>
                   <Button
@@ -556,13 +549,13 @@ export default function SessionsPage() {
                     disabled={!eventFormData.title.trim()}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Event
+                    Lägg till Händelse
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
             <Button onClick={endSession} variant="outline" className="border-red-600 text-red-400 hover:bg-red-900/20">
-              End Session
+              Avsluta Spelmöte
             </Button>
           </div>
         </div>
@@ -579,13 +572,12 @@ export default function SessionsPage() {
               return (
                 <Card
                   key={event.id}
-                  className={`border transition-all rounded-xl ${
-                    event.completed
-                      ? 'bg-stone-950/50 border-stone-900'
-                      : isExpanded
+                  className={`border transition-all rounded-xl ${event.completed
+                    ? 'bg-stone-950/50 border-stone-900'
+                    : isExpanded
                       ? 'bg-stone-950/90 backdrop-blur-xl border-red-900/50 shadow-lg shadow-red-950/20'
                       : 'bg-stone-950/90 backdrop-blur-xl border-stone-900 hover:border-stone-800'
-                  }`}
+                    }`}
                 >
                   {/* Event Header */}
                   <div className="p-4">
@@ -619,19 +611,19 @@ export default function SessionsPage() {
                               {hasImages && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-blue-900/30 text-blue-400 flex items-center gap-1">
                                   <ImageIcon className="h-3 w-3" />
-                                  {JSON.parse(event.imageUrls || '[]').length} image{JSON.parse(event.imageUrls || '[]').length > 1 ? 's' : ''}
+                                  {JSON.parse(event.imageUrls || '[]').length} bild{JSON.parse(event.imageUrls || '[]').length > 1 ? 'er' : ''}
                                 </span>
                               )}
                               {hasSounds && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-green-900/30 text-green-400 flex items-center gap-1">
                                   <Music className="h-3 w-3" />
-                                  {JSON.parse(event.soundUrls || '[]').length} sound{JSON.parse(event.soundUrls || '[]').length > 1 ? 's' : ''}
+                                  {JSON.parse(event.soundUrls || '[]').length} ljud{JSON.parse(event.soundUrls || '[]').length > 1 ? '' : ''}
                                 </span>
                               )}
                               {hasNotes && (
                                 <span className="text-xs px-2 py-1 rounded-full bg-red-950/30 text-red-400 border border-red-900/30 flex items-center gap-1">
                                   <StickyNote className="h-3 w-3" />
-                                  {event.notes?.length} note{(event.notes?.length ?? 0) > 1 ? 's' : ''}
+                                  {event.notes?.length} anteckning{(event.notes?.length ?? 0) > 1 ? 'ar' : ''}
                                 </span>
                               )}
                             </div>
@@ -676,7 +668,7 @@ export default function SessionsPage() {
                       {/* Key Details as bullet list */}
                       {event.description && (
                         <div>
-                          <h4 className="text-sm font-medium text-slate-400 mb-3">Key Details</h4>
+                          <h4 className="text-sm font-medium text-slate-400 mb-3">Nyckeldetaljer</h4>
                           <ul className="space-y-2">
                             {event.description.split('\n').filter(line => line.trim()).map((detail, idx) => (
                               <li key={idx} className="text-base text-slate-200 flex gap-3 leading-relaxed">
@@ -691,16 +683,18 @@ export default function SessionsPage() {
                       {/* Images */}
                       {hasImages && (
                         <div>
-                          <h4 className="text-sm font-medium text-stone-500 mb-2">Images</h4>
+                          <h4 className="text-sm font-medium text-stone-500 mb-2">Bilder</h4>
                           <div className="grid grid-cols-2 gap-3">
                             {JSON.parse(event.imageUrls || '[]').map((assetId: string, idx: number) => {
                               const url = assetUrls[assetId]
                               if (!url) return null
                               return (
                                 <div key={idx} className="flex items-center justify-center bg-black/30 rounded-lg p-2 border border-stone-900">
-                                  <img
+                                  <Image
                                     src={url}
                                     alt={`Event image ${idx + 1}`}
+                                    width={500}
+                                    height={500}
                                     className="max-w-full max-h-64 w-auto h-auto object-contain rounded"
                                   />
                                 </div>
@@ -713,7 +707,7 @@ export default function SessionsPage() {
                       {/* Sounds */}
                       {hasSounds && (
                         <div>
-                          <h4 className="text-sm font-medium text-slate-400 mb-2">Audio</h4>
+                          <h4 className="text-sm font-medium text-slate-400 mb-2">Ljud</h4>
                           <div className="space-y-2">
                             {JSON.parse(event.soundUrls || '[]').map((assetId: string, idx: number) => {
                               const asset = audioAssets[assetId]
@@ -757,7 +751,7 @@ export default function SessionsPage() {
 
                       {/* Notes Section */}
                       <div>
-                        <h4 className="text-sm font-medium text-slate-400 mb-3">Session Notes</h4>
+                        <h4 className="text-sm font-medium text-slate-400 mb-3">Spelmötesanteckningar</h4>
 
                         {/* Existing notes */}
                         {event.notes && event.notes.length > 0 && (
@@ -786,7 +780,7 @@ export default function SessionsPage() {
                           <Textarea
                             value={newNoteContent[event.id] || ''}
                             onChange={(e) => setNewNoteContent({ ...newNoteContent, [event.id]: e.target.value })}
-                            placeholder="Add a note about what happened..."
+                            placeholder="Lägg till en anteckning om vad som hände..."
                             className="bg-slate-800 border-slate-700 min-h-[60px] text-sm"
                           />
                           <Button
@@ -806,8 +800,8 @@ export default function SessionsPage() {
           ) : (
             <div className="text-center py-12">
               <Calendar className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 mb-2">No timeline events yet</p>
-              <p className="text-sm text-slate-500">Add events to track your session flow</p>
+              <p className="text-slate-400 mb-2">Inga tidslinjehändelser än</p>
+              <p className="text-sm text-slate-500">Lägg till händelser för att spåra ditt spelflöde</p>
             </div>
           )}
         </div>
@@ -820,8 +814,8 @@ export default function SessionsPage() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Session Prep</h1>
-          <p className="text-slate-400">Plan and manage your game sessions</p>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Spelmötesförberedelse</h1>
+          <p className="text-slate-400">Planera och hantera dina sessions</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -837,30 +831,30 @@ export default function SessionsPage() {
               className="bg-purple-600 hover:bg-purple-700"
             >
               <Plus className="h-4 w-4 mr-2" />
-              New Session
+              Nytt Spelmöte
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingSession ? 'Edit Session' : 'Create New Session'}</DialogTitle>
+              <DialogTitle>{editingSession ? 'Redigera Spelmöte' : 'Skapa Nytt Spelmöte'}</DialogTitle>
               <DialogDescription className="text-slate-400">
-                {editingSession ? 'Update session details' : 'Plan a new game session'}
+                {editingSession ? 'Uppdatera spelmötesdetaljer' : 'Planera ett nytt spelmöte'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Title</label>
+                  <label className="text-sm font-medium mb-2 block">Rubrik</label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="The Dragon's Lair"
+                    placeholder="Drakens Näste"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Date</label>
+                  <label className="text-sm font-medium mb-2 block">Datum</label>
                   <Input
                     type="date"
                     value={formData.date}
@@ -872,7 +866,7 @@ export default function SessionsPage() {
               </div>
               {!editingSession && (
                 <div className="text-sm text-slate-400 bg-slate-900 p-3 rounded-lg">
-                  📋 This will be Session #{Math.max(0, ...sessions.map(s => s.sessionNumber)) + 1}
+                  📋 Detta blir Spelmöte #{Math.max(0, ...sessions.map(s => s.sessionNumber)) + 1}
                 </div>
               )}
 
@@ -880,8 +874,8 @@ export default function SessionsPage() {
               <div className="border-t border-slate-700 pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <label className="text-sm font-medium block">📍 Planned Key Events</label>
-                    <p className="text-xs text-slate-400">Plan the events you expect to happen during this session</p>
+                    <label className="text-sm font-medium block">📍 Planerade Nyckelhändelser</label>
+                    <p className="text-xs text-slate-400">Planera händelserna du förväntar dig ska ske under detta spelmöte</p>
                   </div>
                   <Dialog open={isPrepEventDialogOpen} onOpenChange={setIsPrepEventDialogOpen}>
                     <DialogTrigger asChild>
@@ -891,29 +885,29 @@ export default function SessionsPage() {
                         className="bg-green-600 hover:bg-green-700"
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        Add Event
+                        Lägg till Händelse
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-slate-800 text-white border-slate-700">
                       <DialogHeader>
-                        <DialogTitle>Add Key Event</DialogTitle>
+                        <DialogTitle>Lägg till Nyckelhändelse</DialogTitle>
                         <DialogDescription className="text-slate-400">
-                          Add a planned event for this session
+                          Lägg till en planerad händelse för detta spelmöte
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs text-slate-400 mb-1 block">Event Title</label>
+                          <label className="text-xs text-slate-400 mb-1 block">Händelserubrik</label>
                           <Input
                             value={eventFormData.title}
                             onChange={(e) => setEventFormData({ ...eventFormData, title: e.target.value })}
                             className="bg-black/50 border-stone-900"
-                            placeholder="e.g., Meeting with Fiona Wachter"
+                            placeholder="t.ex. Möte med Fiona Wachter"
                           />
                         </div>
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <label className="text-xs text-slate-400 block">Key Details</label>
+                            <label className="text-xs text-slate-400 block">Nyckeldetaljer</label>
                             <Button
                               type="button"
                               size="sm"
@@ -922,7 +916,7 @@ export default function SessionsPage() {
                               className="h-6 text-xs"
                             >
                               <Plus className="h-3 w-3 mr-1" />
-                              Add Detail
+                              Lägg till Detalj
                             </Button>
                           </div>
                           <div className="space-y-2">
@@ -933,7 +927,7 @@ export default function SessionsPage() {
                                   value={detail}
                                   onChange={(e) => updateKeyDetail(index, e.target.value)}
                                   className="bg-slate-900 border-slate-700 flex-1"
-                                  placeholder="e.g., Lady Wachter wants the party's help"
+                                  placeholder="t.ex. Lady Wachter vill ha gruppens hjälp"
                                 />
                                 {keyDetails.length > 1 && (
                                   <Button
@@ -951,7 +945,7 @@ export default function SessionsPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="text-xs text-slate-400 mb-1 block">Audio Assets (optional)</label>
+                          <label className="text-xs text-slate-400 mb-1 block">Ljudtillgångar (valfritt)</label>
                           <Button
                             type="button"
                             onClick={() => setIsAudioPickerOpen(true)}
@@ -960,12 +954,12 @@ export default function SessionsPage() {
                           >
                             <Music className="h-4 w-4 mr-2" />
                             {selectedAudioIds.length > 0
-                              ? `${selectedAudioIds.length} audio asset${selectedAudioIds.length > 1 ? 's' : ''} selected`
-                              : 'Select Audio Assets'}
+                              ? `${selectedAudioIds.length} ljudtillgång${selectedAudioIds.length > 1 ? 'ar' : ''} vald${selectedAudioIds.length > 1 ? 'a' : ''}`
+                              : 'Välj Ljudtillgångar'}
                           </Button>
                         </div>
                         <div>
-                          <label className="text-xs text-slate-400 mb-1 block">Image Assets (optional)</label>
+                          <label className="text-xs text-slate-400 mb-1 block">Bildtillgångar (valfritt)</label>
                           <Button
                             type="button"
                             onClick={() => setIsImagePickerOpen(true)}
@@ -974,8 +968,8 @@ export default function SessionsPage() {
                           >
                             <ImageIcon className="h-4 w-4 mr-2" />
                             {selectedImageIds.length > 0
-                              ? `${selectedImageIds.length} image${selectedImageIds.length > 1 ? 's' : ''} selected`
-                              : 'Select Images'}
+                              ? `${selectedImageIds.length} bild${selectedImageIds.length > 1 ? 'er' : ''} vald${selectedImageIds.length > 1 ? 'a' : ''}`
+                              : 'Välj Bilder'}
                           </Button>
                         </div>
                         <Button
@@ -985,7 +979,7 @@ export default function SessionsPage() {
                           disabled={!eventFormData.title.trim()}
                         >
                           <Plus className="h-4 w-4 mr-2" />
-                          Add Event
+                          Lägg till Händelse
                         </Button>
                       </div>
                     </DialogContent>
@@ -1004,7 +998,7 @@ export default function SessionsPage() {
                               {event.order + 1}
                             </div>
                             <div className="flex-1">
-                              <h4 className="font-semibold text-white text-sm mb-1">Key Event #{event.order + 1}</h4>
+                              <h4 className="font-semibold text-white text-sm mb-1">Nyckelhändelse #{event.order + 1}</h4>
                             </div>
                             <div className="flex gap-1 flex-shrink-0">
                               <Button
@@ -1044,12 +1038,12 @@ export default function SessionsPage() {
 
                           <div className="space-y-3 pl-11">
                             <div>
-                              <label className="text-xs text-slate-500 mb-1 block">Event Title</label>
+                              <label className="text-xs text-slate-500 mb-1 block">Händelserubrik</label>
                               <p className="text-sm text-white">{event.title}</p>
                             </div>
                             {event.description && (
                               <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Key Details</label>
+                                <label className="text-xs text-slate-500 mb-1 block">Nyckeldetaljer</label>
                                 <ul className="space-y-1">
                                   {event.description.split('\n').filter(line => line.trim()).map((detail, idx) => (
                                     <li key={idx} className="text-xs text-slate-300 flex gap-2">
@@ -1062,13 +1056,13 @@ export default function SessionsPage() {
                             )}
                             {(event.soundUrls || event.imageUrls) && (
                               <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Assets</label>
+                                <label className="text-xs text-slate-500 mb-1 block">Tillgångar</label>
                                 <div className="flex gap-2">
                                   {event.soundUrls && (
-                                    <p className="text-xs text-green-400">🔊 Sounds</p>
+                                    <p className="text-xs text-green-400">🔊 Ljud</p>
                                   )}
                                   {event.imageUrls && (
-                                    <p className="text-xs text-blue-400">🖼️ Images</p>
+                                    <p className="text-xs text-blue-400">🖼️ Bilder</p>
                                   )}
                                 </div>
                               </div>
@@ -1079,13 +1073,13 @@ export default function SessionsPage() {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-slate-500 text-sm">
-                    No events planned yet. Click &quot;Add Event&quot; to start.
+                    Inga händelser planerade än. Klicka på &quot;Lägg till Händelse&quot; för att börja.
                   </div>
                 )}
               </div>
 
               <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                {editingSession ? 'Update Session' : `Create Session${prepEvents.length > 0 ? ` with ${prepEvents.length} events` : ''}`}
+                {editingSession ? 'Uppdatera Spelmöte' : `Skapa Spelmöte${prepEvents.length > 0 ? ` med ${prepEvents.length} händelser` : ''}`}
               </Button>
             </form>
           </DialogContent>
@@ -1105,7 +1099,7 @@ export default function SessionsPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white">
-                        Session {session.sessionNumber}: {session.title}
+                        Spelmöte {session.sessionNumber}: {session.title}
                       </h3>
                       <p className="text-sm text-slate-400">
                         {new Date(session.date).toLocaleDateString('en-US', {
@@ -1121,7 +1115,7 @@ export default function SessionsPage() {
                   {session.timeline && session.timeline.length > 0 && (
                     <div className="mt-3 pl-14">
                       <p className="text-xs text-purple-400">
-                        📍 {session.timeline.length} planned event{session.timeline.length > 1 ? 's' : ''}
+                        📍 {session.timeline.length} planerad{session.timeline.length > 1 ? 'e' : ''} händelse{session.timeline.length > 1 ? 'r' : ''}
                       </p>
                     </div>
                   )}
@@ -1139,7 +1133,7 @@ export default function SessionsPage() {
                     className="bg-green-600 hover:bg-green-700"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    Start Session
+                    Starta Spelmöte
                   </Button>
                   <Button
                     size="sm"
@@ -1166,8 +1160,8 @@ export default function SessionsPage() {
       {sessions.length === 0 && (
         <div className="text-center py-12">
           <Calendar className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 mb-2">No sessions yet</p>
-          <p className="text-sm text-slate-500">Create your first session to start planning</p>
+          <p className="text-slate-400 mb-2">Inga sessions än</p>
+          <p className="text-sm text-slate-500">Skapa ditt första spelmöte för att börja planera</p>
         </div>
       )}
 

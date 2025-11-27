@@ -5,43 +5,43 @@ import Link from "next/link";
 export default function DMDashboard() {
   const features = [
     {
-      title: "Campaigns",
-      description: "Manage your campaign manuscripts and chapters",
+      title: "Kampanjer",
+      description: "Hantera dina kampanjmanuskript och kapitel",
       icon: BookOpen,
       href: "/campaigns",
       color: "text-red-400"
     },
     {
       title: "Sessions",
-      description: "Plan and track your game sessions",
+      description: "Planera och följ dina sessions",
       icon: Calendar,
       href: "/sessions",
       color: "text-red-300"
     },
     {
-      title: "Combat Tracker",
-      description: "Track initiative and combat encounters",
+      title: "Stridsverktyg",
+      description: "Spåra initiativ och stridsmöten",
       icon: Swords,
       href: "/combat",
       color: "text-red-500"
     },
     {
-      title: "Session Planner",
-      description: "Organize assets, images, and videos for sessions",
+      title: "Planering",
+      description: "Organisera tillgångar, bilder och videor för sessions",
       icon: FileText,
       href: "/planner",
       color: "text-stone-300"
     },
     {
-      title: "Notes",
-      description: "Quick notes for NPCs, locations, and quests",
+      title: "Anteckningar",
+      description: "Snabba anteckningar för SLP:er, platser och uppdrag",
       icon: StickyNote,
       href: "/notes",
       color: "text-stone-400"
     },
     {
-      title: "Soundboard",
-      description: "Ambient sounds and music for immersion",
+      title: "Ljudbord",
+      description: "Omgivningsljud och musik för inlevelse",
       icon: Music,
       href: "/soundboard",
       color: "text-red-400"
@@ -53,12 +53,12 @@ export default function DMDashboard() {
       <div className="mb-12 text-center">
         <h1 className="text-6xl font-black tracking-tighter mb-4">
           <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">
-            Welcome to Barovia
+            Välkommen till Barovia
           </span>
         </h1>
         <div className="h-px w-48 mx-auto bg-gradient-to-r from-transparent via-red-900/50 to-transparent mb-4"></div>
         <p className="text-stone-500 text-sm tracking-[0.3em] uppercase">
-          Dungeon Master Command Center
+          Spelledarens Kommandocentral
         </p>
       </div>
 
@@ -93,28 +93,28 @@ export default function DMDashboard() {
         <div className="absolute -inset-0.5 bg-gradient-to-r from-red-900/20 to-transparent rounded-2xl blur"></div>
         <div className="relative p-8 bg-stone-950/90 backdrop-blur-xl border border-red-950/30 rounded-2xl">
           <h2 className="text-2xl font-bold text-stone-200 mb-4 flex items-center gap-2">
-            <span className="text-red-500">⚔</span> Getting Started
+            <span className="text-red-500">⚔</span> Kom igång
           </h2>
           <ul className="text-stone-400 space-y-3 text-sm leading-relaxed">
             <li className="flex items-start gap-3">
               <span className="text-red-800 mt-1">•</span>
-              <span>Create a campaign to chronicle your descent into darkness</span>
+              <span>Skapa en kampanj för att krönikera din nedstigning i mörkret</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-red-800 mt-1">•</span>
-              <span>Plan sessions with timeline events and key encounters</span>
+              <span>Planera sessions med tidslinjehändelser och nyckelmöten</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-red-800 mt-1">•</span>
-              <span>Track combat initiatives and manage deadly encounters</span>
+              <span>Spåra stridsinitiativ och hantera dödliga möten</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-red-800 mt-1">•</span>
-              <span>Document NPCs, locations, and the secrets they hold</span>
+              <span>Dokumentera SLP:er, platser och hemligheterna de bär på</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-red-800 mt-1">•</span>
-              <span>Set the mood with atmospheric soundscapes and music</span>
+              <span>Sätt stämningen med atmosfäriska ljudlandskap och musik</span>
             </li>
           </ul>
         </div>

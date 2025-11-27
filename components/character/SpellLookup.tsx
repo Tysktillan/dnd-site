@@ -57,7 +57,7 @@ export function SpellLookup() {
         const data = await res.json();
         setAllSpells(data.results);
       } catch (error) {
-        console.error('Failed to fetch spells:', error);
+        console.error('Misslyckades att hämta besvärjelser:', error);
       } finally {
         setLoadingSpells(false);
       }
@@ -140,7 +140,7 @@ export function SpellLookup() {
         setHoveredSpell(data);
       }
     } catch (error) {
-      console.error('Failed to fetch spell details:', error);
+      console.error('Misslyckades att hämta besvärjelsedetaljer:', error);
     } finally {
       setLoading(false);
     }
@@ -200,12 +200,12 @@ export function SpellLookup() {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [isDragging, dragOffset]);
+  }, [isDragging, dragOffset]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getLevelText = (level: number) => {
-    if (level === 0) return 'Cantrip';
+    if (level === 0) return 'Knep';
     const suffix = level === 1 ? 'st' : level === 2 ? 'nd' : level === 3 ? 'rd' : 'th';
-    return `${level}${suffix}-level`;
+    return `${level}:a nivån`;
   };
 
   return (
@@ -230,177 +230,176 @@ export function SpellLookup() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-stone-200 flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-red-400" />
-            Spell Lookup
+            Sök på spells
           </h2>
         </div>
 
-      {/* Search Input */}
-      <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-500" />
-        <Input
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search for a spell..."
-          className="pl-10 bg-stone-900 border-stone-800 text-stone-100"
-          disabled={loadingSpells}
-        />
-      </div>
+        {/* Search Input */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-500" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Sök efter en spell..."
+            className="pl-10 bg-stone-900 border-stone-800 text-stone-100"
+            disabled={loadingSpells}
+          />
+        </div>
 
-      {/* Search Results */}
-      {filteredSpells.length > 0 && (
-        <div className="space-y-1 mb-4 max-h-64 overflow-y-auto">
-          {filteredSpells.map((spell) => (
-            <button
-              key={spell.index}
-              ref={(el) => {
-                if (el) buttonRefs.current.set(spell.index, el);
-              }}
-              onMouseEnter={(e) => {
-                if (!pinnedSpell) {
-                  fetchSpellDetails(spell.index, e.currentTarget, false);
-                }
-              }}
-              onMouseLeave={() => {
-                if (!pinnedSpell) {
-                  setHoveredSpell(null);
-                }
-              }}
-              onClick={(e) => fetchSpellDetails(spell.index, e.currentTarget, true)}
-              className="w-full text-left px-3 py-2 rounded bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 transition-colors"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-stone-200">{spell.name}</span>
-                <span className="text-xs text-stone-500">
-                  {spell.level === 0 ? 'Cantrip' : `Lvl ${spell.level}`}
-                </span>
+        {/* Search Results */}
+        {filteredSpells.length > 0 && (
+          <div className="space-y-1 mb-4 max-h-64 overflow-y-auto">
+            {filteredSpells.map((spell) => (
+              <button
+                key={spell.index}
+                ref={(el) => {
+                  if (el) buttonRefs.current.set(spell.index, el);
+                }}
+                onMouseEnter={(e) => {
+                  if (!pinnedSpell) {
+                    fetchSpellDetails(spell.index, e.currentTarget, false);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (!pinnedSpell) {
+                    setHoveredSpell(null);
+                  }
+                }}
+                onClick={(e) => fetchSpellDetails(spell.index, e.currentTarget, true)}
+                className="w-full text-left px-3 py-2 rounded bg-stone-900 hover:bg-stone-800 border border-stone-800 hover:border-stone-700 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-stone-200">{spell.name}</span>
+                  <span className="text-xs text-stone-500">
+                    {spell.level === 0 ? 'Knep' : `Nivå ${spell.level}`}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {searchTerm && filteredSpells.length === 0 && !loadingSpells && (
+          <div className="text-center text-stone-500 py-8">
+            Inga besvärjelser hittades som matchar &ldquo;{searchTerm}&rdquo;
+          </div>
+        )}
+
+        {!searchTerm && (
+          <div className="text-center text-stone-500 py-8">
+            {loadingSpells ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Laddar besvärjelser...
               </div>
-            </button>
-          ))}
-        </div>
-      )}
+            ) : (
+              'Sök efter en spell för att se detaljer'
+            )}
+          </div>
+        )}
 
-      {searchTerm && filteredSpells.length === 0 && !loadingSpells && (
-        <div className="text-center text-stone-500 py-8">
-          No spells found matching &ldquo;{searchTerm}&rdquo;
-        </div>
-      )}
+        {/* Tooltip */}
+        {(hoveredSpell || pinnedSpell) && (
+          <div
+            ref={tooltipRef}
+            className={`absolute z-[100] w-96 max-h-[600px] overflow-y-auto p-4 bg-stone-950 rounded-lg shadow-2xl spell-tooltip ${pinnedSpell ? 'border-2 border-amber-800' : 'border-2 border-stone-800'
+              } ${pinnedSpell && isDragging ? 'cursor-grabbing' : pinnedSpell ? 'cursor-grab' : ''}`}
+            style={{
+              top: `${tooltipPosition.top}px`,
+              left: `${tooltipPosition.left}px`,
+              userSelect: isDragging ? 'none' : 'auto',
+            }}
+            onMouseDown={handleMouseDown}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-stone-500" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Close button and pinned indicator */}
+                <div className="flex items-center justify-between -mt-1 -mr-1 mb-2">
+                  {pinnedSpell && (
+                    <div className="flex items-center gap-1 text-xs text-amber-400">
+                      <GripVertical className="h-3 w-3" />
+                      <Pin className="h-3 w-3" />
+                      <span>Fäst - Dra för att flytta</span>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleCloseTooltip}
+                    className="ml-auto p-1 rounded hover:bg-stone-800 text-stone-400 hover:text-stone-200 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                {/* Spell Header */}
+                <div>
+                  <h3 className="text-xl font-bold text-stone-100 mb-1">{(pinnedSpell || hoveredSpell)?.name}</h3>
+                  <p className="text-xs text-stone-400">
+                    {getLevelText((pinnedSpell || hoveredSpell)!.level)} {(pinnedSpell || hoveredSpell)?.school.name.toLowerCase()}
+                    {(pinnedSpell || hoveredSpell)?.ritual && ' (ritual)'}
+                  </p>
+                </div>
 
-      {!searchTerm && (
-        <div className="text-center text-stone-500 py-8">
-          {loadingSpells ? (
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading spells...
-            </div>
-          ) : (
-            'Search for a spell to view details'
-          )}
-        </div>
-      )}
-
-      {/* Tooltip */}
-      {(hoveredSpell || pinnedSpell) && (
-        <div
-          ref={tooltipRef}
-          className={`absolute z-[100] w-96 max-h-[600px] overflow-y-auto p-4 bg-stone-950 rounded-lg shadow-2xl spell-tooltip ${
-            pinnedSpell ? 'border-2 border-amber-800' : 'border-2 border-stone-800'
-          } ${pinnedSpell && isDragging ? 'cursor-grabbing' : pinnedSpell ? 'cursor-grab' : ''}`}
-          style={{
-            top: `${tooltipPosition.top}px`,
-            left: `${tooltipPosition.left}px`,
-            userSelect: isDragging ? 'none' : 'auto',
-          }}
-          onMouseDown={handleMouseDown}
-        >
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-stone-500" />
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {/* Close button and pinned indicator */}
-              <div className="flex items-center justify-between -mt-1 -mr-1 mb-2">
-                {pinnedSpell && (
-                  <div className="flex items-center gap-1 text-xs text-amber-400">
-                    <GripVertical className="h-3 w-3" />
-                    <Pin className="h-3 w-3" />
-                    <span>Pinned - Drag to move</span>
+                {/* Spell Stats */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-black/30 border border-stone-800 rounded p-2">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Kasttid</div>
+                    <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.casting_time}</div>
                   </div>
-                )}
-                <button
-                  onClick={handleCloseTooltip}
-                  className="ml-auto p-1 rounded hover:bg-stone-800 text-stone-400 hover:text-stone-200 transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              {/* Spell Header */}
-              <div>
-                <h3 className="text-xl font-bold text-stone-100 mb-1">{(pinnedSpell || hoveredSpell)?.name}</h3>
-                <p className="text-xs text-stone-400">
-                  {getLevelText((pinnedSpell || hoveredSpell)!.level)} {(pinnedSpell || hoveredSpell)?.school.name.toLowerCase()}
-                  {(pinnedSpell || hoveredSpell)?.ritual && ' (ritual)'}
-                </p>
-              </div>
-
-              {/* Spell Stats */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-black/30 border border-stone-800 rounded p-2">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Casting Time</div>
-                  <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.casting_time}</div>
-                </div>
-                <div className="bg-black/30 border border-stone-800 rounded p-2">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Range</div>
-                  <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.range}</div>
-                </div>
-                <div className="bg-black/30 border border-stone-800 rounded p-2">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Components</div>
-                  <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.components.join(', ')}</div>
-                </div>
-                <div className="bg-black/30 border border-stone-800 rounded p-2">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Duration</div>
-                  <div className="text-stone-200">
-                    {(pinnedSpell || hoveredSpell)?.concentration && 'Concentration, '}
-                    {(pinnedSpell || hoveredSpell)?.duration}
+                  <div className="bg-black/30 border border-stone-800 rounded p-2">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Räckvidd</div>
+                    <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.range}</div>
+                  </div>
+                  <div className="bg-black/30 border border-stone-800 rounded p-2">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Komponenter</div>
+                    <div className="text-stone-200">{(pinnedSpell || hoveredSpell)?.components.join(', ')}</div>
+                  </div>
+                  <div className="bg-black/30 border border-stone-800 rounded p-2">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Varaktighet</div>
+                    <div className="text-stone-200">
+                      {(pinnedSpell || hoveredSpell)?.concentration && 'Koncentration, '}
+                      {(pinnedSpell || hoveredSpell)?.duration}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Description */}
-              <div className="bg-black/30 border border-stone-800 rounded p-3">
-                <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Description</div>
-                <div className="text-xs text-stone-300 space-y-1">
-                  {(pinnedSpell || hoveredSpell)?.desc.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
-                </div>
-              </div>
-
-              {/* At Higher Levels */}
-              {(pinnedSpell || hoveredSpell)?.higher_level && (pinnedSpell || hoveredSpell)!.higher_level!.length > 0 && (
+                {/* Description */}
                 <div className="bg-black/30 border border-stone-800 rounded p-3">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">At Higher Levels</div>
+                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Beskrivning</div>
                   <div className="text-xs text-stone-300 space-y-1">
-                    {(pinnedSpell || hoveredSpell)?.higher_level?.map((paragraph, idx) => (
+                    {(pinnedSpell || hoveredSpell)?.desc.map((paragraph, idx) => (
                       <p key={idx}>{paragraph}</p>
                     ))}
                   </div>
                 </div>
-              )}
 
-              {/* Classes */}
-              {(pinnedSpell || hoveredSpell)?.classes && (pinnedSpell || hoveredSpell)!.classes!.length > 0 && (
-                <div className="bg-black/30 border border-stone-800 rounded p-3">
-                  <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Available To</div>
-                  <div className="text-xs text-stone-300">
-                    {(pinnedSpell || hoveredSpell)?.classes?.map((c) => c.name).join(', ')}
+                {/* At Higher Levels */}
+                {(pinnedSpell || hoveredSpell)?.higher_level && (pinnedSpell || hoveredSpell)!.higher_level!.length > 0 && (
+                  <div className="bg-black/30 border border-stone-800 rounded p-3">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Vid Högre Nivåer</div>
+                    <div className="text-xs text-stone-300 space-y-1">
+                      {(pinnedSpell || hoveredSpell)?.higher_level?.map((paragraph, idx) => (
+                        <p key={idx}>{paragraph}</p>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+                )}
+
+                {/* Classes */}
+                {(pinnedSpell || hoveredSpell)?.classes && (pinnedSpell || hoveredSpell)!.classes!.length > 0 && (
+                  <div className="bg-black/30 border border-stone-800 rounded p-3">
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider mb-1">Tillgänglig För</div>
+                    <div className="text-xs text-stone-300">
+                      {(pinnedSpell || hoveredSpell)?.classes?.map((c) => c.name).join(', ')}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </Card>
     </>
   );

@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FileText, Plus, Trash2, Edit2, Eye, EyeOff, Image as ImageIcon, Video, Link as LinkIcon } from 'lucide-react'
+import NextImage from 'next/image'
 import {
   Dialog,
   DialogContent,
@@ -143,10 +144,11 @@ export default function PlannerPage() {
       case 'image':
         return (
           <div className="flex items-center justify-center h-full">
-            <img
+            <NextImage
               src={item.content}
               alt={item.title}
-              className="max-h-full max-w-full object-contain"
+              fill
+              className="object-contain"
             />
           </div>
         )
@@ -342,10 +344,11 @@ export default function PlannerPage() {
 
               {item.type === 'image' && (
                 <div className="mb-3 rounded overflow-hidden bg-slate-900">
-                  <img
+                  <NextImage
                     src={item.content}
                     alt={item.title}
-                    className="w-full h-32 object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}
@@ -358,11 +361,10 @@ export default function PlannerPage() {
                 <Button
                   size="sm"
                   onClick={() => toggleShown(item)}
-                  className={`flex-1 ${
-                    item.shown
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : 'bg-slate-700 hover:bg-slate-600'
-                  }`}
+                  className={`flex-1 ${item.shown
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-slate-700 hover:bg-slate-600'
+                    }`}
                 >
                   {item.shown ? (
                     <>

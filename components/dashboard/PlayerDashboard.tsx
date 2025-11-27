@@ -36,12 +36,12 @@ export default async function PlayerDashboard() {
       <div className="mb-8 text-center">
         <h1 className="text-5xl font-black tracking-tighter mb-4">
           <span className="bg-gradient-to-b from-stone-100 via-stone-300 to-red-900 bg-clip-text text-transparent">
-            Welcome, {session?.user?.name}
+            Välkommen, {session?.user?.name}
           </span>
         </h1>
         <div className="h-px w-48 mx-auto bg-gradient-to-r from-transparent via-red-900/50 to-transparent mb-4"></div>
         <p className="text-stone-500 text-sm tracking-[0.3em] uppercase">
-          Adventurer&apos;s Dashboard
+          Äventyrarens Översikt
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default async function PlayerDashboard() {
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-stone-100 mb-1">
-                    {character?.name || 'No Character'}
+                    {character?.name || 'Ingen Karaktär'}
                   </h2>
                   {character && (
                     <p className="text-stone-400 text-sm">
@@ -70,7 +70,7 @@ export default async function PlayerDashboard() {
                   href="/character"
                   className="px-4 py-2 bg-red-950/50 hover:bg-red-900/50 border border-red-900/50 rounded-lg text-sm text-stone-300 hover:text-stone-100 transition-all"
                 >
-                  View Full Character
+                  Gå till karaktärssidan
                 </Link>
               </div>
 
@@ -82,7 +82,7 @@ export default async function PlayerDashboard() {
                       <div className="flex items-center gap-3">
                         <Heart className="h-5 w-5 text-red-400" />
                         <div>
-                          <p className="text-xs text-stone-500 uppercase tracking-wider">Hit Points</p>
+                          <p className="text-xs text-stone-500 uppercase tracking-wider">HP</p>
                           <p className="text-2xl font-bold text-stone-100">
                             {character.currentHp ?? character.maxHp}/{character.maxHp}
                           </p>
@@ -93,7 +93,7 @@ export default async function PlayerDashboard() {
                       <div className="flex items-center gap-3">
                         <ShieldIcon className="h-5 w-5 text-stone-400" />
                         <div>
-                          <p className="text-xs text-stone-500 uppercase tracking-wider">Armor Class</p>
+                          <p className="text-xs text-stone-500 uppercase tracking-wider">AC</p>
                           <p className="text-2xl font-bold text-stone-100">{character.armorClass ?? 10}</p>
                         </div>
                       </div>
@@ -121,8 +121,8 @@ export default async function PlayerDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <User className="h-12 w-12 text-stone-700 mx-auto mb-3" />
-                  <p className="text-stone-400 mb-4">You don&apos;t have a character yet</p>
-                  <p className="text-sm text-stone-500">Contact your DM to create your character</p>
+                  <p className="text-stone-400 mb-4">Du har ingen karaktär än</p>
+                  <p className="text-sm text-stone-500">Kontakta din SL för att skapa din karaktär</p>
                 </div>
               )}
             </div>
@@ -134,7 +134,7 @@ export default async function PlayerDashboard() {
           {character && (
             <>
               <Card className="p-4 bg-stone-950/90 backdrop-blur-xl border-stone-900">
-                <h3 className="text-sm font-semibold text-stone-400 uppercase tracking-wider mb-3">Details</h3>
+                <h3 className="text-sm font-semibold text-stone-400 uppercase tracking-wider mb-3">Detaljer</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-stone-500">Proficiency</span>
@@ -145,11 +145,11 @@ export default async function PlayerDashboard() {
                     <span className="text-stone-200">{character.speed} ft.</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Languages</span>
+                    <span className="text-stone-500">Alignment</span>
                     <span className="text-stone-200">{character.alignment || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Background</span>
+                    <span className="text-stone-500">Bakgrund</span>
                     <span className="text-stone-200 truncate ml-2">{character.background || 'N/A'}</span>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default async function PlayerDashboard() {
                     <span className="text-2xl">✨</span>
                     <div>
                       <p className="text-sm font-semibold text-amber-200">Inspiration</p>
-                      <p className="text-xs text-amber-400/70">You have inspiration!</p>
+                      <p className="text-xs text-amber-400/70">Du har inspiration!</p>
                     </div>
                   </div>
                 </Card>
@@ -175,7 +175,7 @@ export default async function PlayerDashboard() {
       <div className="mt-8">
         <div className="flex items-center gap-3 mb-6">
           <Scroll className="h-5 w-5 text-red-400" />
-          <h2 className="text-2xl font-bold text-stone-200">Campaign News</h2>
+          <h2 className="text-2xl font-bold text-stone-200">Kampanjnyheter</h2>
         </div>
 
         <NewsCarousel posts={newsPosts} />

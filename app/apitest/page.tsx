@@ -60,7 +60,7 @@ const API_CATEGORIES: EndpointCategory[] = [
 ];
 
 export default function APITestPage() {
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedUrl, setSelectedUrl] = useState<string>('');
@@ -109,11 +109,10 @@ export default function APITestPage() {
                     <button
                       key={endpoint.url}
                       onClick={() => fetchData(endpoint.url)}
-                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                        selectedUrl === endpoint.url
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${selectedUrl === endpoint.url
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
                     >
                       {endpoint.label}
                     </button>
@@ -149,7 +148,7 @@ export default function APITestPage() {
               </div>
             )}
 
-            {!loading && !error && response && (
+            {!loading && !error && !!response && (
               <div className="bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 p-4 overflow-auto max-h-[600px]">
                 <pre className="text-xs">
                   {JSON.stringify(response, null, 2)}

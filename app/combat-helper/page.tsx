@@ -15,6 +15,7 @@ import {
   Sun,
   Package
 } from 'lucide-react';
+import Image from 'next/image';
 import { SpellLookup } from '@/components/character/SpellLookup';
 import { SkillHelper } from '@/components/character/SkillHelper';
 import { NumberInput } from '@/components/ui/number-input';
@@ -273,23 +274,22 @@ export default function CombatHelperPage() {
                 {equippedItems.map(([slot, item]) => {
                   const itemData = item as { name: string; description?: string; stats?: string; imageUrl?: string };
                   return (
-                  <div
-                    key={slot}
-                    onMouseEnter={(e) => handleItemHover(itemData, e)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                    className="bg-black/30 border border-stone-800 rounded-lg p-3 hover:border-amber-700 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      {itemData.imageUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={itemData.imageUrl} alt={itemData.name} className="w-8 h-8 object-contain" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-amber-200 truncate">{itemData.name}</div>
-                        <div className="text-xs text-stone-500 capitalize">{slot.replace(/([A-Z])/g, ' $1').trim()}</div>
+                    <div
+                      key={slot}
+                      onMouseEnter={(e) => handleItemHover(itemData, e)}
+                      onMouseLeave={() => setHoveredItem(null)}
+                      className="bg-black/30 border border-stone-800 rounded-lg p-3 hover:border-amber-700 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        {itemData.imageUrl && (
+                          <Image src={itemData.imageUrl} alt={itemData.name} width={32} height={32} className="object-contain" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-amber-200 truncate">{itemData.name}</div>
+                          <div className="text-xs text-stone-500 capitalize">{slot.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   );
                 })}
               </div>

@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2, Music, Image as ImageIcon, Search, Tag, Volume2, X } from 'lucide-react'
+import NextImage from 'next/image'
 import {
   Dialog,
   DialogContent,
@@ -199,14 +200,14 @@ export default function MediaLibraryPage() {
   }
 
   const deleteAudio = async (id: string) => {
-    if (confirm('Delete this audio asset?')) {
+    if (confirm('Ta bort denna ljudfil?')) {
       await fetch(`/api/media/audio/${id}`, { method: 'DELETE' })
       fetchAudioAssets()
     }
   }
 
   const deleteImage = async (id: string) => {
-    if (confirm('Delete this image asset?')) {
+    if (confirm('Ta bort denna bildfil?')) {
       await fetch(`/api/media/images/${id}`, { method: 'DELETE' })
       fetchImageAssets()
     }
@@ -226,7 +227,7 @@ export default function MediaLibraryPage() {
 
     // Check if soundboard is full
     if (soundboardSlots.size >= 25) {
-      alert('Soundboard is full! Remove a sound first.')
+      alert('Ljudbordet är fullt! Ta bort ett ljud först.')
       return
     }
 
@@ -297,8 +298,8 @@ export default function MediaLibraryPage() {
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Media Library</h1>
-        <p className="text-slate-400">Manage your audio and image assets</p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Mediabibliotek</h1>
+        <p className="text-slate-400">Hantera dina ljud- och bildfiler</p>
       </div>
 
       {/* Tab Navigation */}
@@ -309,7 +310,7 @@ export default function MediaLibraryPage() {
           className={activeTab === 'audio' ? 'bg-purple-600' : ''}
         >
           <Music className="h-4 w-4 mr-2" />
-          Audio ({audioAssets.length})
+          Ljud ({audioAssets.length})
         </Button>
         <Button
           onClick={() => setActiveTab('images')}
@@ -317,7 +318,7 @@ export default function MediaLibraryPage() {
           className={activeTab === 'images' ? 'bg-purple-600' : ''}
         >
           <ImageIcon className="h-4 w-4 mr-2" />
-          Images ({imageAssets.length})
+          Bilder ({imageAssets.length})
         </Button>
       </div>
 
@@ -328,16 +329,16 @@ export default function MediaLibraryPage() {
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by name, description, or tags..."
+            placeholder="Sök efter namn, beskrivning eller taggar..."
             className="pl-10 bg-slate-800 border-slate-700"
           />
         </div>
         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
           <SelectTrigger className="w-48 bg-slate-800 border-slate-700">
-            <SelectValue placeholder="Category" />
+            <SelectValue placeholder="Kategori" />
           </SelectTrigger>
           <SelectContent className="bg-slate-800 border-slate-700">
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">Alla Kategorier</SelectItem>
             {(activeTab === 'audio' ? audioCategories : imageCategories).map(cat => (
               <SelectItem key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</SelectItem>
             ))}
@@ -349,31 +350,31 @@ export default function MediaLibraryPage() {
             <DialogTrigger asChild>
               <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Audio
+                Lägg till Ljud
               </Button>
             </DialogTrigger>
             <DialogContent className="bg-slate-800 text-white border-slate-700">
               <DialogHeader>
-                <DialogTitle>Add Audio Asset</DialogTitle>
+                <DialogTitle>Lägg till Ljudfil</DialogTitle>
                 <DialogDescription className="text-slate-400">
-                  Add a new audio file to your library
+                  Lägg till en ny ljudfil i ditt bibliotek
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddAudio} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Name</label>
+                  <label className="text-sm font-medium mb-2 block">Namn</label>
                   <Input
                     value={audioFormData.name}
                     onChange={(e) => setAudioFormData({ ...audioFormData, name: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="Tavern Ambience"
+                    placeholder="Värdshusatmosfär"
                     required
                   />
                 </div>
 
                 {/* Source Type Selection */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Source</label>
+                  <label className="text-sm font-medium mb-2 block">Källa</label>
                   <div className="flex gap-2">
                     <Button
                       type="button"
@@ -389,7 +390,7 @@ export default function MediaLibraryPage() {
                       variant={audioFormData.sourceType === 'file' ? 'default' : 'outline'}
                       className={`flex-1 ${audioFormData.sourceType === 'file' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
                     >
-                      Upload File
+                      Ladda upp Fil
                     </Button>
                   </div>
                 </div>
@@ -405,11 +406,11 @@ export default function MediaLibraryPage() {
                         placeholder="https://www.youtube.com/watch?v=..."
                         required
                       />
-                      <p className="text-xs text-slate-500 mt-1">Enter full YouTube video URL</p>
+                      <p className="text-xs text-slate-500 mt-1">Ange fullständig YouTube video URL</p>
                     </div>
                   ) : (
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Audio File</label>
+                      <label className="text-sm font-medium mb-2 block">Ljudfil</label>
                       <Input
                         key="file-upload"
                         type="file"
@@ -418,16 +419,16 @@ export default function MediaLibraryPage() {
                         className="bg-slate-900 border-slate-700"
                         disabled={uploadingAudio}
                       />
-                      {uploadingAudio && <p className="text-xs text-purple-400 mt-1">Uploading...</p>}
+                      {uploadingAudio && <p className="text-xs text-purple-400 mt-1">Laddar upp...</p>}
                       {audioFormData.url && !uploadingAudio && (
-                        <p className="text-xs text-green-400 mt-1">✓ File uploaded successfully</p>
+                        <p className="text-xs text-green-400 mt-1">✓ Fil uppladdad</p>
                       )}
                     </div>
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Category</label>
+                    <label className="text-sm font-medium mb-2 block">Kategori</label>
                     <Select
                       value={audioFormData.category}
                       onValueChange={(value) => setAudioFormData({ ...audioFormData, category: value })}
@@ -443,7 +444,7 @@ export default function MediaLibraryPage() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Duration (seconds)</label>
+                    <label className="text-sm font-medium mb-2 block">Varaktighet (sekunder)</label>
                     <Input
                       type="number"
                       value={audioFormData.duration}
@@ -454,25 +455,25 @@ export default function MediaLibraryPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Tags (comma separated)</label>
+                  <label className="text-sm font-medium mb-2 block">Taggar (kommateparerade)</label>
                   <Input
                     value={audioFormData.tags}
                     onChange={(e) => setAudioFormData({ ...audioFormData, tags: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="tavern, background, medieval"
+                    placeholder="värdshus, bakgrund, medeltida"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <label className="text-sm font-medium mb-2 block">Beskrivning</label>
                   <Textarea
                     value={audioFormData.description}
                     onChange={(e) => setAudioFormData({ ...audioFormData, description: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="Background ambience for tavern scenes"
+                    placeholder="Bakgrundsatmosfär för värdshusscener"
                   />
                 </div>
                 <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                  Add Asset
+                  Lägg till Fil
                 </Button>
               </form>
             </DialogContent>
@@ -482,31 +483,31 @@ export default function MediaLibraryPage() {
             <DialogTrigger asChild>
               <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Image
+                Lägg till Bild
               </Button>
             </DialogTrigger>
             <DialogContent className="bg-slate-800 text-white border-slate-700">
               <DialogHeader>
-                <DialogTitle>Add Image Asset</DialogTitle>
+                <DialogTitle>Lägg till Bildfil</DialogTitle>
                 <DialogDescription className="text-slate-400">
-                  Add a new image to your library
+                  Lägg till en ny bildfil i ditt bibliotek
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddImage} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Name</label>
+                  <label className="text-sm font-medium mb-2 block">Namn</label>
                   <Input
                     value={imageFormData.name}
                     onChange={(e) => setImageFormData({ ...imageFormData, name: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="Tavern Map"
+                    placeholder="Värdshuskarta"
                     required
                   />
                 </div>
 
                 {/* Source Type Selection */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Source</label>
+                  <label className="text-sm font-medium mb-2 block">Källa</label>
                   <div className="flex gap-2">
                     <Button
                       type="button"
@@ -522,7 +523,7 @@ export default function MediaLibraryPage() {
                       variant={imageFormData.sourceType === 'file' ? 'default' : 'outline'}
                       className={`flex-1 ${imageFormData.sourceType === 'file' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
                     >
-                      Upload File
+                      Ladda upp Fil
                     </Button>
                   </div>
                 </div>
@@ -530,7 +531,7 @@ export default function MediaLibraryPage() {
                 <div>
                   {imageFormData.sourceType === 'url' ? (
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Image URL</label>
+                      <label className="text-sm font-medium mb-2 block">Bild URL</label>
                       <Input
                         value={imageFormData.url}
                         onChange={(e) => setImageFormData({ ...imageFormData, url: e.target.value })}
@@ -538,11 +539,11 @@ export default function MediaLibraryPage() {
                         placeholder="https://..."
                         required
                       />
-                      <p className="text-xs text-slate-500 mt-1">Enter full image URL</p>
+                      <p className="text-xs text-slate-500 mt-1">Ange fullständig bild URL</p>
                     </div>
                   ) : (
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Image File</label>
+                      <label className="text-sm font-medium mb-2 block">Bildfil</label>
                       <Input
                         key="image-file-upload"
                         type="file"
@@ -551,15 +552,15 @@ export default function MediaLibraryPage() {
                         className="bg-slate-900 border-slate-700"
                         disabled={uploadingImage}
                       />
-                      {uploadingImage && <p className="text-xs text-purple-400 mt-1">Uploading...</p>}
+                      {uploadingImage && <p className="text-xs text-purple-400 mt-1">Laddar upp...</p>}
                       {imageFormData.url && !uploadingImage && (
-                        <p className="text-xs text-green-400 mt-1">✓ File uploaded successfully</p>
+                        <p className="text-xs text-green-400 mt-1">✓ Fil uppladdad</p>
                       )}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Category</label>
+                  <label className="text-sm font-medium mb-2 block">Kategori</label>
                   <Select
                     value={imageFormData.category}
                     onValueChange={(value) => setImageFormData({ ...imageFormData, category: value })}
@@ -575,25 +576,25 @@ export default function MediaLibraryPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Tags (comma separated)</label>
+                  <label className="text-sm font-medium mb-2 block">Taggar (kommateparerade)</label>
                   <Input
                     value={imageFormData.tags}
                     onChange={(e) => setImageFormData({ ...imageFormData, tags: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="tavern, map, interior"
+                    placeholder="värdshus, karta, interiör"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <label className="text-sm font-medium mb-2 block">Beskrivning</label>
                   <Textarea
                     value={imageFormData.description}
                     onChange={(e) => setImageFormData({ ...imageFormData, description: e.target.value })}
                     className="bg-slate-900 border-slate-700"
-                    placeholder="Map of the Bloody Mary tavern"
+                    placeholder="Karta över värdshuset Bloody Mary"
                   />
                 </div>
                 <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                  Add Asset
+                  Lägg till Fil
                 </Button>
               </form>
             </DialogContent>
@@ -669,7 +670,7 @@ export default function MediaLibraryPage() {
                     <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
                       {Array.from({ length: 25 }, (_, i) => (
                         <SelectItem key={i} value={i.toString()} className="text-white text-xs">
-                          Slot {i + 1}
+                          Plats {i + 1}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -690,7 +691,7 @@ export default function MediaLibraryPage() {
                   className="w-full text-xs h-8 bg-purple-600 hover:bg-purple-700"
                 >
                   <Volume2 className="h-3 w-3 mr-1" />
-                  Add to Board
+                  Lägg till på Bord
                 </Button>
               )}
             </Card>
@@ -702,10 +703,11 @@ export default function MediaLibraryPage() {
             <Card key={asset.id} className="overflow-hidden bg-slate-800 border-slate-700">
               <div className="relative w-full" style={{ minHeight: '200px', maxHeight: '300px' }}>
                 <div className="w-full h-full flex items-center justify-center bg-slate-900 p-2">
-                  <img
+                  <NextImage
                     src={asset.url}
                     alt={asset.name}
-                    className="max-w-full max-h-[280px] w-auto h-auto object-contain"
+                    fill
+                    className="object-contain"
                   />
                 </div>
                 <Button
@@ -737,20 +739,20 @@ export default function MediaLibraryPage() {
 
       {((activeTab === 'audio' && filterAssets(audioAssets).length === 0) ||
         (activeTab === 'images' && filterAssets(imageAssets).length === 0)) && (
-        <div className="text-center py-12">
-          {activeTab === 'audio' ? (
-            <Music className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-          ) : (
-            <ImageIcon className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-          )}
-          <p className="text-slate-400 mb-2">No {activeTab} assets found</p>
-          <p className="text-sm text-slate-500">
-            {searchQuery || selectedCategory !== 'all'
-              ? 'Try adjusting your filters'
-              : `Add your first ${activeTab} asset to get started`}
-          </p>
-        </div>
-      )}
+          <div className="text-center py-12">
+            {activeTab === 'audio' ? (
+              <Music className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+            ) : (
+              <ImageIcon className="h-16 w-16 text-slate-600 mx-auto mb-4" />
+            )}
+            <p className="text-slate-400 mb-2">Inga {activeTab === 'audio' ? 'ljud' : 'bilder'} hittades</p>
+            <p className="text-sm text-slate-500">
+              {searchQuery || selectedCategory !== 'all'
+                ? 'Försök justera dina filter'
+                : `Lägg till din första ${activeTab === 'audio' ? 'ljudfil' : 'bildfil'} för att komma igång`}
+            </p>
+          </div>
+        )}
     </div>
   )
 }

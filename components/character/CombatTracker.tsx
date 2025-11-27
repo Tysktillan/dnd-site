@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { NumberInput } from "@/components/ui/number-input"
 import { Label } from "@/components/ui/label"
-import { Heart, Shield, Sun, Plus, Minus } from "lucide-react"
+import { Shield, Sun, Plus, Minus } from "lucide-react"
 
 interface CombatLog {
   type: 'damage' | 'heal' | 'long_rest'
@@ -59,9 +59,9 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
 
   const getLogText = (entry: CombatLog) => {
     switch (entry.type) {
-      case 'damage': return `Took ${entry.amount} damage`
-      case 'heal': return `Healed ${entry.amount} HP`
-      case 'long_rest': return `Long rest: Full HP`
+      case 'damage': return `Tog ${entry.amount} skada`
+      case 'heal': return `Läkte ${entry.amount} HP`
+      case 'long_rest': return `Long rest: Fullt HP`
     }
   }
 
@@ -80,13 +80,13 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
     <Card className="p-6 bg-stone-950/90 backdrop-blur-xl border-stone-900">
       <h2 className="text-lg font-bold text-stone-200 mb-4 flex items-center gap-2">
         <Shield className="h-5 w-5 text-red-400" />
-        Combat Tracker
+        Stridsspårare
       </h2>
 
       {/* HP Display */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-stone-400">Hit Points</span>
+          <span className="text-sm text-stone-400">Hälsopoäng</span>
           <span className="text-2xl font-bold text-stone-100">
             {currentHp} / {maxHp}
           </span>
@@ -102,7 +102,7 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
       {/* Damage/Heal Controls */}
       <div className="space-y-3 mb-6">
         <div>
-          <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Amount</Label>
+          <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Mängd</Label>
           <NumberInput
             value={amount}
             onChange={(e) => setAmount(parseInt(e.target.value) || 0)}
@@ -117,7 +117,7 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
             className="bg-red-950 hover:bg-red-900 border border-red-900/50 text-stone-100"
           >
             <Minus className="h-4 w-4 mr-2" />
-            Take Damage
+            Ta Skada
           </Button>
           <Button
             onClick={handleHeal}
@@ -125,7 +125,7 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
             className="bg-green-950 hover:bg-green-900 border border-green-900/50 text-stone-100"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Heal
+            Hela
           </Button>
         </div>
       </div>
@@ -145,7 +145,7 @@ export function CombatTracker({ currentHp, maxHp, onUpdateHp }: CombatTrackerPro
       {/* Combat Log */}
       {log.length > 0 && (
         <div>
-          <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Recent History</Label>
+          <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Senaste Historik</Label>
           <div className="space-y-1 max-h-48 overflow-y-auto">
             {log.map((entry, idx) => (
               <div

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Music, Plus, Trash2, Play, Pause, Volume2, Upload } from 'lucide-react'
+import { Music, Plus, Trash2, Play, Pause, Volume2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -68,7 +68,7 @@ export default function SoundboardPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this sound?')) {
+    if (confirm('Är du säker på att du vill ta bort detta ljud?')) {
       await fetch(`/api/sounds/${id}`, { method: 'DELETE' })
       if (currentlyPlaying === id) {
         audioRef.current?.pause()
@@ -112,36 +112,36 @@ export default function SoundboardPage() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Soundboard</h1>
-          <p className="text-slate-400">Manage music, ambience, and sound effects for your sessions</p>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Ljudbord</h1>
+          <p className="text-slate-400">Hantera musik, atmosfär och ljudeffekter för dina sessioner</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-purple-600 hover:bg-purple-700">
               <Plus className="h-4 w-4 mr-2" />
-              Add Sound
+              Lägg till Ljud
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-slate-800 text-white border-slate-700">
             <DialogHeader>
-              <DialogTitle>Add New Sound</DialogTitle>
+              <DialogTitle>Lägg till Nytt Ljud</DialogTitle>
               <DialogDescription className="text-slate-400">
-                Add a sound file to your soundboard
+                Lägg till en ljudfil till ditt ljudbord
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Name</label>
+                <label className="text-sm font-medium mb-2 block">Namn</label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-slate-900 border-slate-700"
-                  placeholder="Epic Battle Music"
+                  placeholder="Episk Stridmusik"
                   required
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Category</label>
+                <label className="text-sm font-medium mb-2 block">Kategori</label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
@@ -159,7 +159,7 @@ export default function SoundboardPage() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Audio URL</label>
+                <label className="text-sm font-medium mb-2 block">Ljud URL</label>
                 <Input
                   value={formData.url}
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
@@ -168,11 +168,11 @@ export default function SoundboardPage() {
                   required
                 />
                 <p className="text-xs text-slate-500 mt-1">
-                  Enter a URL to an audio file (MP3, WAV, etc.)
+                  Ange en URL till en ljudfil (MP3, WAV, etc.)
                 </p>
               </div>
               <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                Add Sound
+                Lägg till Ljud
               </Button>
             </form>
           </DialogContent>
@@ -185,7 +185,7 @@ export default function SoundboardPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-slate-800 border-slate-700">
-            <SelectItem value="all" className="text-white">All Categories</SelectItem>
+            <SelectItem value="all" className="text-white">Alla Kategorier</SelectItem>
             {categories.map(cat => (
               <SelectItem key={cat} value={cat} className="text-white">
                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -222,21 +222,20 @@ export default function SoundboardPage() {
 
             <Button
               onClick={() => togglePlay(sound)}
-              className={`w-full ${
-                currentlyPlaying === sound.id
-                  ? 'bg-orange-600 hover:bg-orange-700'
-                  : 'bg-purple-600 hover:bg-purple-700'
-              }`}
+              className={`w-full ${currentlyPlaying === sound.id
+                ? 'bg-orange-600 hover:bg-orange-700'
+                : 'bg-purple-600 hover:bg-purple-700'
+                }`}
             >
               {currentlyPlaying === sound.id ? (
                 <>
                   <Pause className="h-4 w-4 mr-2" />
-                  Stop
+                  Stopp
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4 mr-2" />
-                  Play
+                  Spela
                 </>
               )}
             </Button>
@@ -247,8 +246,8 @@ export default function SoundboardPage() {
       {filteredSounds.length === 0 && (
         <div className="text-center py-12">
           <Music className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 mb-2">No sounds in this category</p>
-          <p className="text-sm text-slate-500">Add your first sound to get started</p>
+          <p className="text-slate-400 mb-2">Inga ljud i denna kategori</p>
+          <p className="text-sm text-slate-500">Lägg till ditt första ljud för att komma igång</p>
         </div>
       )}
 

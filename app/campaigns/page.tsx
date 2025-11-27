@@ -66,7 +66,7 @@ export default function CampaignsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this campaign? All chapters will be deleted.')) {
+    if (confirm('Är du säker på att du vill ta bort denna kampanj? Alla kapitel kommer att raderas.')) {
       await fetch(`/api/campaigns/${id}`, { method: 'DELETE' })
       fetchCampaigns()
     }
@@ -85,8 +85,8 @@ export default function CampaignsPage() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Campaigns</h1>
-          <p className="text-slate-400">Manage your campaign stories and manuscripts</p>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Kampanjer</h1>
+          <p className="text-slate-400">Hantera dina kampanjberättelser och manuskript</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -98,38 +98,38 @@ export default function CampaignsPage() {
               className="bg-purple-600 hover:bg-purple-700"
             >
               <Plus className="h-4 w-4 mr-2" />
-              New Campaign
+              Ny Kampanj
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-slate-800 text-white border-slate-700">
             <DialogHeader>
-              <DialogTitle>{editingCampaign ? 'Edit Campaign' : 'Create New Campaign'}</DialogTitle>
+              <DialogTitle>{editingCampaign ? 'Redigera Kampanj' : 'Skapa Ny Kampanj'}</DialogTitle>
               <DialogDescription className="text-slate-400">
-                {editingCampaign ? 'Update campaign details' : 'Start a new adventure'}
+                {editingCampaign ? 'Uppdatera kampanjdetaljer' : 'Påbörja ett nytt äventyr'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Campaign Name</label>
+                <label className="text-sm font-medium mb-2 block">Kampanjnamn</label>
                 <Input
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-slate-900 border-slate-700"
-                  placeholder="e.g., The Lost Mines of Phandelver"
+                  placeholder="t.ex. Gruvan i Phandelver"
                   required
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Description</label>
+                <label className="text-sm font-medium mb-2 block">Beskrivning</label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="bg-slate-900 border-slate-700 min-h-[100px]"
-                  placeholder="Brief overview of the campaign..."
+                  placeholder="Kort översikt av kampanjen..."
                 />
               </div>
               <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                {editingCampaign ? 'Update Campaign' : 'Create Campaign'}
+                {editingCampaign ? 'Uppdatera Kampanj' : 'Skapa Kampanj'}
               </Button>
             </form>
           </DialogContent>
@@ -164,7 +164,7 @@ export default function CampaignsPage() {
               <Link href={`/campaigns/${campaign.id}`} className="flex-1">
                 <Button className="w-full bg-slate-700 hover:bg-slate-600">
                   <FileText className="h-4 w-4 mr-2" />
-                  View Manuscript
+                  Visa Manuskript
                 </Button>
               </Link>
               <Button
@@ -191,8 +191,8 @@ export default function CampaignsPage() {
       {campaigns.length === 0 && (
         <div className="text-center py-12">
           <BookOpen className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 mb-2">No campaigns yet</p>
-          <p className="text-sm text-slate-500">Create your first campaign to begin your adventure</p>
+          <p className="text-slate-400 mb-2">Inga kampanjer än</p>
+          <p className="text-sm text-slate-500">Skapa din första kampanj för att börja ditt äventyr</p>
         </div>
       )}
     </div>

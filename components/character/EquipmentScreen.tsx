@@ -18,6 +18,7 @@ import {
   Loader2,
   Image as ImageIcon
 } from "lucide-react"
+import NextImage from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
@@ -63,7 +64,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
 
   useEffect(() => {
     fetchItems()
-  }, [playerId])
+  }, [playerId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchItems = async () => {
     try {
@@ -116,12 +117,12 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file')
+      alert('Vänligen välj en bildfil')
       return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be smaller than 5MB')
+      alert('Bilden måste vara mindre än 5MB')
       return
     }
 
@@ -148,7 +149,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
       })
 
       if (!response.ok) {
-        throw new Error('Upload failed')
+        throw new Error('Uppladdning misslyckades')
       }
 
       const data = await response.json()
@@ -162,7 +163,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Failed to upload background image')
+      alert('Misslyckades att ladda upp bakgrundsbild')
     } finally {
       setUploadingBg(false)
     }
@@ -183,18 +184,18 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
 
   const slots = [
     // Top center
-    { key: 'helm' as const, icon: <Crown className="h-6 w-6" />, position: 'top-4 left-1/2 -translate-x-1/2', label: 'Helm' },
+    { key: 'helm' as const, icon: <Crown className="h-6 w-6" />, position: 'top-4 left-1/2 -translate-x-1/2', label: 'Hjälm' },
     // Left side (top to bottom) - evenly spaced
-    { key: 'chest' as const, icon: <ShieldIcon className="h-6 w-6" />, position: 'top-20 left-4', label: 'Chest' },
-    { key: 'cloak' as const, icon: <Wind className="h-6 w-6" />, position: 'top-44 left-0', label: 'Cloak' },
-    { key: 'boots' as const, icon: <Footprints className="h-6 w-6" />, position: 'top-[272px] left-4', label: 'Boots' },
+    { key: 'chest' as const, icon: <ShieldIcon className="h-6 w-6" />, position: 'top-20 left-4', label: 'Bröst' },
+    { key: 'cloak' as const, icon: <Wind className="h-6 w-6" />, position: 'top-44 left-0', label: 'Mantel' },
+    { key: 'boots' as const, icon: <Footprints className="h-6 w-6" />, position: 'top-[272px] left-4', label: 'Stövlar' },
     // Right side (top to bottom) - evenly spaced
-    { key: 'gloves' as const, icon: <Hand className="h-6 w-6" />, position: 'top-20 right-4', label: 'Gloves' },
-    { key: 'necklace' as const, icon: <Gem className="h-5 w-5" />, position: 'top-44 right-0', label: 'Necklace' },
+    { key: 'gloves' as const, icon: <Hand className="h-6 w-6" />, position: 'top-20 right-4', label: 'Handskar' },
+    { key: 'necklace' as const, icon: <Gem className="h-5 w-5" />, position: 'top-44 right-0', label: 'Halsband' },
     { key: 'ring' as const, icon: <CircleDot className="h-5 w-5" />, position: 'top-[272px] right-4', label: 'Ring' },
     // Bottom center weapons
-    { key: 'mainHand' as const, icon: <Sword className="h-6 w-6" />, position: 'bottom-4 left-1/2 -translate-x-1/2 -translate-x-12', label: 'Main Hand' },
-    { key: 'offHand' as const, icon: <Shield className="h-5 w-5" />, position: 'bottom-4 left-1/2 -translate-x-1/2 translate-x-4', label: 'Off Hand' },
+    { key: 'mainHand' as const, icon: <Sword className="h-6 w-6" />, position: 'bottom-4 left-1/2 -translate-x-1/2 -translate-x-12', label: 'Huvudhand' },
+    { key: 'offHand' as const, icon: <Shield className="h-5 w-5" />, position: 'bottom-4 left-1/2 -translate-x-1/2 translate-x-4', label: 'Sidohand' },
   ]
 
   return (
@@ -203,7 +204,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-stone-200 flex items-center gap-2">
             <Sword className="h-5 w-5 text-red-400" />
-            Equipment
+            Utrustning
           </h2>
           {onUpdateBackground && (
             <Button
@@ -213,7 +214,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
               className="text-stone-400 hover:text-stone-200"
             >
               <ImageIcon className="h-4 w-4 mr-2" />
-              Change Background
+              Byt Bakgrund
             </Button>
           )}
         </div>
@@ -230,8 +231,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
           {/* Character Portrait */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border-4 border-stone-800 bg-stone-900 overflow-hidden shadow-2xl z-10">
             {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="Character" className="w-full h-full object-cover" />
+              <NextImage src={avatarUrl} alt="Character" fill className="object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-stone-700">
                 <User className="h-20 w-20" />
@@ -258,7 +258,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
         <DialogContent className="bg-stone-950 border-stone-800 text-stone-100 max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-stone-100">
-              Equip {editingSlot && slots.find(s => s.key === editingSlot)?.label}
+              Utrusta {editingSlot && slots.find(s => s.key === editingSlot)?.label}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
@@ -289,8 +289,8 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
               </div>
             ) : (
               <div className="text-center py-8 text-stone-500">
-                <p>No items available for this slot</p>
-                <p className="text-xs mt-2">Ask your DM to create items</p>
+                <p>Inga föremål tillgängliga för denna plats</p>
+                <p className="text-xs mt-2">Be din SL att skapa föremål</p>
               </div>
             )}
 
@@ -300,7 +300,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
                 variant="ghost"
                 className="w-full text-red-400 hover:text-red-300 hover:bg-red-950/20"
               >
-                Unequip Current Item
+                Ta av nuvarande föremål
               </Button>
             )}
           </div>
@@ -311,7 +311,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
       <Dialog open={showBgUpload} onOpenChange={(open) => !open && setShowBgUpload(false)}>
         <DialogContent className="bg-stone-950 border-stone-800 text-stone-100">
           <DialogHeader>
-            <DialogTitle className="text-stone-100">Change Equipment Background</DialogTitle>
+            <DialogTitle className="text-stone-100">Byt utrustningsbakgrund</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
@@ -325,10 +325,10 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
                 <div className="text-center">
                   <Upload className="h-12 w-12 mx-auto mb-3 text-stone-500" />
                   <p className="text-sm text-stone-400">
-                    {selectedBgFile ? selectedBgFile.name : 'Click to upload background image'}
+                    {selectedBgFile ? selectedBgFile.name : 'Klicka för att ladda upp bakgrundsbild'}
                   </p>
                   <p className="text-xs text-stone-600 mt-2">
-                    Recommended: 512x512px square image (max 5MB)
+                    Rekommenderat: 512x512px kvadratisk bild (max 5MB)
                   </p>
                 </div>
               </label>
@@ -344,12 +344,12 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
                   {uploadingBg ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Uploading...
+                      Laddar upp...
                     </>
                   ) : (
                     <>
                       <Upload className="h-4 w-4 mr-2" />
-                      Upload Background
+                      Ladda upp Bakgrund
                     </>
                   )}
                 </Button>
@@ -361,7 +361,7 @@ export function EquipmentScreen({ equipment, avatarUrl, backgroundUrl, playerId,
                   variant="ghost"
                   className="text-stone-400 hover:text-stone-200"
                 >
-                  Cancel
+                  Avbryt
                 </Button>
               </div>
             )}
