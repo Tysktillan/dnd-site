@@ -11,7 +11,11 @@
       "Bash(npx prisma:*)",
       "Bash(npm install:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:www.dnd5eapi.co)",
+      "WebSearch",
+      "WebFetch(domain:5e-bits.github.io)",
+      "Bash(npx next build:*)"
     ],
     "deny": [],
     "ask": []

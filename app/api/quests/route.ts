@@ -50,6 +50,11 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
           }
+        },
+        _count: {
+          select: {
+            QuestComment: true
+          }
         }
       },
       orderBy: [
@@ -88,7 +93,7 @@ export async function POST(request: NextRequest) {
         isPublic: data.isPublic ?? false,
         reward: data.reward || null,
         isTimeSensitive: data.isTimeSensitive ?? false,
-        timeConstraint: data.timeConstraint || null,
+        deadlineDay: data.deadlineDay || null,
         createdBy: session.user.id,
         updatedAt: new Date(),
       },

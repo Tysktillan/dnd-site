@@ -10,17 +10,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Check if requesting secondary character
+    const { searchParams } = new URL(request.url);
+    const isSecondary = searchParams.get('secondary') === 'true';
+
     // Get the user's player character
     const user = await prisma.user.findUnique({
       where: { id: session.user.id }
     });
 
-    if (!user?.playerId) {
+    const playerId = isSecondary ? user?.secondaryPlayerId : user?.playerId;
+
+    if (!playerId) {
       return NextResponse.json({ error: "No character found" }, { status: 404 });
     }
 
     const player = await prisma.player.findUnique({
-      where: { id: user.playerId }
+      where: { id: playerId }
     });
 
     if (!player) {
@@ -69,6 +75,8 @@ export async function PATCH(request: NextRequest) {
         name: data.name,
         className: data.className,
         className2: data.className2,
+        subclass: data.subclass,
+        subclass2: data.subclass2,
         race: data.race,
         level: data.level,
         level2: data.level2,
@@ -92,6 +100,8 @@ export async function PATCH(request: NextRequest) {
         notes: data.notes,
         avatarUrl: data.avatarUrl,
         backgroundUrl: data.backgroundUrl,
+        skillProficiencies: data.skillProficiencies,
+        jackOfAllTrades: data.jackOfAllTrades,
       }
     });
 

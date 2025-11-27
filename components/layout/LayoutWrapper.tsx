@@ -2,17 +2,22 @@
 
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Menu } from 'lucide-react'
 import { Sidebar } from './Sidebar'
 import { QuickControls } from '../QuickControls'
+import { CombatFloatingButton } from '../combat/CombatFloatingButton'
+import { CampaignDay } from '../CampaignDay'
 import { Button } from '@/components/ui/button'
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Don't show sidebar and navigation on login page
   const isAuthPage = pathname === '/login'
+  const isPlayer = session?.user?.role === 'player'
 
   if (isAuthPage) {
     return <>{children}</>
@@ -57,6 +62,12 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         </div>
       </main>
       <QuickControls />
+
+      {/* Campaign Day Display */}
+      <CampaignDay />
+
+      {/* Combat floating button - only for players */}
+      {isPlayer && <CombatFloatingButton />}
     </div>
   )
 }

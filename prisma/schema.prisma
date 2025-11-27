@@ -147,37 +147,37 @@ model PlannerItem {
 }
 
 model Player {
-  id                                  String   @id
-  name                                String   @unique
-  maxHp                               Int?
-  armorClass                          Int?
-  isActive                            Boolean  @default(true)
-  order                               Int      @default(0)
-  createdAt                           DateTime @default(now())
-  updatedAt                           DateTime
-  alignment                           String?
-  avatarUrl                           String?
-  background                          String?
-  charisma                            Int      @default(10)
-  className                           String?
-  constitution                        Int      @default(10)
-  currentHp                           Int?
-  dexterity                           Int      @default(10)
-  equipment                           String?
-  features                            String?
-  inspiration                         Boolean  @default(false)
-  intelligence                        Int      @default(10)
-  level                               Int      @default(1)
-  notes                               String?
-  proficiency                         Int      @default(2)
-  race                                String?
-  speed                               Int      @default(30)
-  spells                              String?
-  strength                            Int      @default(10)
-  wisdom                              Int      @default(10)
-  backgroundUrl                       String?
-  className2                          String?
-  level2                              Int      @default(0)
+  id                 String   @id
+  name               String   @unique
+  maxHp              Int?
+  armorClass         Int?
+  isActive           Boolean  @default(true)
+  order              Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
+  alignment          String?
+  avatarUrl          String?
+  background         String?
+  charisma           Int      @default(10)
+  className          String?
+  constitution       Int      @default(10)
+  currentHp          Int?
+  dexterity          Int      @default(10)
+  equipment          String?
+  features           String?
+  inspiration        Boolean  @default(false)
+  intelligence       Int      @default(10)
+  level              Int      @default(1)
+  notes              String?
+  proficiency        Int      @default(2)
+  race               String?
+  speed              Int      @default(30)
+  spells             String?
+  strength           Int      @default(10)
+  wisdom             Int      @default(10)
+  backgroundUrl      String?
+  className2         String?
+  level2             Int      @default(0)
   subclass           String?
   subclass2          String?
   skillProficiencies String?
@@ -229,34 +229,54 @@ model TimelineEvent {
 }
 
 model User {
-  id                String   @id
-  username          String   @unique
+  id                String         @id
+  username          String         @unique
   password          String
-  role              String   @default("player")
+  role              String         @default("player")
   name              String
-  createdAt         DateTime @default(now())
+  createdAt         DateTime       @default(now())
   updatedAt         DateTime
-  playerId          String?  @unique
-  secondaryPlayerId String?  @unique
-  player            Player?  @relation("UserPrimaryPlayer", fields: [playerId], references: [id])
-  secondaryPlayer   Player?  @relation("UserSecondaryPlayer", fields: [secondaryPlayerId], references: [id])
+  playerId          String?        @unique
+  secondaryPlayerId String?        @unique
+  player            Player?        @relation("UserPrimaryPlayer", fields: [playerId], references: [id])
+  secondaryPlayer   Player?        @relation("UserSecondaryPlayer", fields: [secondaryPlayerId], references: [id])
   Quest             Quest[]
+  QuestComment      QuestComment[]
 }
 
 model Quest {
-  id              String    @id
+  id              String         @id
   title           String
   description     String?
-  type            String    @default("personal") // "official" or "personal"
-  status          String    @default("active") // "active", "completed"
-  priority        String    @default("normal") // "low", "normal", "high", "urgent"
-  isPublic        Boolean   @default(false) // For personal quests: public = visible to all, private = only creator
+  type            String         @default("personal") // "official" or "personal"
+  status          String         @default("active") // "active", "completed"
+  priority        String         @default("normal") // "low", "normal", "high", "urgent"
+  isPublic        Boolean        @default(false) // For personal quests: public = visible to all, private = only creator
   reward          String?
-  isTimeSensitive Boolean   @default(false)
-  timeConstraint  String?
+  isTimeSensitive Boolean        @default(false)
+  deadlineDay     Int?           // Campaign day when quest must be completed
   createdBy       String
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime       @default(now())
   updatedAt       DateTime
   completedAt     DateTime?
-  User            User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  User            User           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  QuestComment    QuestComment[]
+}
+
+model QuestComment {
+  id        String   @id @default(cuid())
+  questId   String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Quest     Quest    @relation(fields: [questId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CampaignSettings {
+  id          String   @id @default("default")
+  currentDay  Int      @default(1)
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
 }
