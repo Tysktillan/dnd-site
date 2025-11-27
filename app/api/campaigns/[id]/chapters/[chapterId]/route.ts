@@ -17,7 +17,7 @@ export async function PUT(
       }
     })
     return NextResponse.json(chapter)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to update chapter' }, { status: 500 })
   }
 }
@@ -32,7 +32,7 @@ export async function DELETE(
       where: { id: chapterId }
     })
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to delete chapter' }, { status: 500 })
   }
 }
