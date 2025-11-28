@@ -1,10 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { useEffect } from 'react'
 import { X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import NextImage from 'next/image'
 
 interface MapViewerProps {
   isOpen: boolean
@@ -14,37 +11,41 @@ interface MapViewerProps {
 }
 
 export function MapViewer({ isOpen, onClose, imageUrl, title }: MapViewerProps) {
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-full p-0 bg-black/95 border-stone-800">
-        <div className="relative w-full h-full flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-stone-800 bg-black/50 backdrop-blur-sm">
-            <h2 className="text-xl font-bold text-stone-100">{title}</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-stone-400 hover:text-stone-200"
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
+  // Prevent body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
-          {/* Image */}
-          <div className="flex-1 relative overflow-auto p-4">
-            <div className="relative w-full h-full min-h-[600px]">
-              <NextImage
-                src={imageUrl}
-                alt={title}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/95 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-stone-800 bg-black/50 backdrop-blur-sm">
+        <h2 className="text-xl font-bold text-stone-100">{title}</h2>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-lg hover:bg-stone-800/50 transition-colors text-stone-400 hover:text-stone-200"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+
+      {/* Image - Full width, scrollable */}
+      <div className="flex-1 overflow-auto p-4">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-auto"
+        />
+      </div>
+    </div>
   )
 }
