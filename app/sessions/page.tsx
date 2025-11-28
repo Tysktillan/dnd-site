@@ -222,7 +222,7 @@ export default function SessionsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Är du säker på att du vill ta bort detta spelmöte?')) {
+    if (confirm('Är du säker på att du vill ta bort denna session?')) {
       await fetch(`/api/sessions/${id}`, { method: 'DELETE' })
       fetchSessions()
     }
@@ -323,7 +323,7 @@ export default function SessionsPage() {
 
   const endSession = async () => {
     if (!activeSession) return
-    if (confirm('Avsluta detta spelmöte och återgå till förberedelseläge?')) {
+    if (confirm('Avsluta detta session och återgå till förberedelseläge?')) {
       await fetch(`/api/sessions/${activeSession.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -446,9 +446,9 @@ export default function SessionsPage() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">
-              🎲 Spelmöte {activeSession.sessionNumber}: {activeSession.title}
+              🎲 session {activeSession.sessionNumber}: {activeSession.title}
             </h1>
-            <p className="text-stone-500">Spelmöte pågår</p>
+            <p className="text-stone-500">session pågår</p>
           </div>
           <div className="flex gap-2">
             <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
@@ -462,7 +462,7 @@ export default function SessionsPage() {
                 <DialogHeader>
                   <DialogTitle>Lägg till Tidslinjehändelse</DialogTitle>
                   <DialogDescription className="text-stone-500">
-                    Lägg till en ny händelse i spelmötestidslinjen
+                    Lägg till en ny händelse i sessionstidslinjen
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -555,7 +555,7 @@ export default function SessionsPage() {
               </DialogContent>
             </Dialog>
             <Button onClick={endSession} variant="outline" className="border-red-600 text-red-400 hover:bg-red-900/20">
-              Avsluta Spelmöte
+              Avsluta session
             </Button>
           </div>
         </div>
@@ -751,7 +751,7 @@ export default function SessionsPage() {
 
                       {/* Notes Section */}
                       <div>
-                        <h4 className="text-sm font-medium text-slate-400 mb-3">Spelmötesanteckningar</h4>
+                        <h4 className="text-sm font-medium text-slate-400 mb-3">sessionsanteckningar</h4>
 
                         {/* Existing notes */}
                         {event.notes && event.notes.length > 0 && (
@@ -812,9 +812,9 @@ export default function SessionsPage() {
   // Session prep view (list of sessions)
   return (
     <div className="p-4 md:p-6 lg:p-8">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8">
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">Spelmötesförberedelse</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-2">sessionsförberedelse</h1>
           <p className="text-slate-400">Planera och hantera dina sessions</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -828,17 +828,17 @@ export default function SessionsPage() {
                 })
                 setPrepEvents([])
               }}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-purple-600 hover:bg-purple-700 mt-4"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Nytt Spelmöte
+              Ny session
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-slate-800 text-white border-slate-700 max-w-2xl">
             <DialogHeader>
-              <DialogTitle>{editingSession ? 'Redigera Spelmöte' : 'Skapa Nytt Spelmöte'}</DialogTitle>
+              <DialogTitle>{editingSession ? 'Redigera session' : 'Skapa ny session'}</DialogTitle>
               <DialogDescription className="text-slate-400">
-                {editingSession ? 'Uppdatera spelmötesdetaljer' : 'Planera ett nytt spelmöte'}
+                {editingSession ? 'Uppdatera sessionsdetaljer' : 'Planera en ny session'}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -866,7 +866,7 @@ export default function SessionsPage() {
               </div>
               {!editingSession && (
                 <div className="text-sm text-slate-400 bg-slate-900 p-3 rounded-lg">
-                  📋 Detta blir Spelmöte #{Math.max(0, ...sessions.map(s => s.sessionNumber)) + 1}
+                  📋 Detta blir session #{Math.max(0, ...sessions.map(s => s.sessionNumber)) + 1}
                 </div>
               )}
 
@@ -875,7 +875,7 @@ export default function SessionsPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <label className="text-sm font-medium block">📍 Planerade Nyckelhändelser</label>
-                    <p className="text-xs text-slate-400">Planera händelserna du förväntar dig ska ske under detta spelmöte</p>
+                    <p className="text-xs text-slate-400">Planera händelserna du förväntar dig ska ske under detta session</p>
                   </div>
                   <Dialog open={isPrepEventDialogOpen} onOpenChange={setIsPrepEventDialogOpen}>
                     <DialogTrigger asChild>
@@ -892,7 +892,7 @@ export default function SessionsPage() {
                       <DialogHeader>
                         <DialogTitle>Lägg till Nyckelhändelse</DialogTitle>
                         <DialogDescription className="text-slate-400">
-                          Lägg till en planerad händelse för detta spelmöte
+                          Lägg till en planerad händelse för detta session
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
@@ -1079,7 +1079,7 @@ export default function SessionsPage() {
               </div>
 
               <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                {editingSession ? 'Uppdatera Spelmöte' : `Skapa Spelmöte${prepEvents.length > 0 ? ` med ${prepEvents.length} händelser` : ''}`}
+                {editingSession ? 'Uppdatera session' : `Skapa session${prepEvents.length > 0 ? ` med ${prepEvents.length} händelser` : ''}`}
               </Button>
             </form>
           </DialogContent>
@@ -1099,7 +1099,7 @@ export default function SessionsPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white">
-                        Spelmöte {session.sessionNumber}: {session.title}
+                        session {session.sessionNumber}: {session.title}
                       </h3>
                       <p className="text-sm text-slate-400">
                         {new Date(session.date).toLocaleDateString('en-US', {
@@ -1133,7 +1133,7 @@ export default function SessionsPage() {
                     className="bg-green-600 hover:bg-green-700"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    Starta Spelmöte
+                    Starta session
                   </Button>
                   <Button
                     size="sm"
@@ -1161,7 +1161,7 @@ export default function SessionsPage() {
         <div className="text-center py-12">
           <Calendar className="h-16 w-16 text-slate-600 mx-auto mb-4" />
           <p className="text-slate-400 mb-2">Inga sessions än</p>
-          <p className="text-sm text-slate-500">Skapa ditt första spelmöte för att börja planera</p>
+          <p className="text-sm text-slate-500">Skapa ditt första session för att börja planera</p>
         </div>
       )}
 
