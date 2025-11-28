@@ -21,11 +21,13 @@ import {
   Video,
   Newspaper,
   X,
-  Scroll
+  Scroll,
+  Map
 } from 'lucide-react'
 import NextImage from 'next/image'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { MapViewer } from '@/components/MapViewer'
 
 const dmNavigation = [
   { name: 'Översikt', href: '/', icon: Home },
@@ -63,6 +65,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     level2?: number
     backgroundUrl?: string
   } | null>(null)
+  const [isMapViewerOpen, setIsMapViewerOpen] = useState(false)
 
   useEffect(() => {
     // Fetch player character if user is a player
@@ -193,6 +196,13 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </nav>
 
         <div className="border-t border-stone-900 p-4 space-y-3">
+          <button
+            onClick={() => setIsMapViewerOpen(true)}
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all group relative w-full text-stone-400 hover:bg-stone-900/50 hover:text-stone-200"
+          >
+            <Map className="h-5 w-5 transition-transform group-hover:scale-110" />
+            Karta över Barovia
+          </button>
           <Link
             href="/legends-of-barovia"
             onClick={handleLinkClick}
@@ -222,6 +232,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           </p>
         </div>
       </div >
+
+      {/* Map Viewer Modal */}
+      <MapViewer
+        isOpen={isMapViewerOpen}
+        onClose={() => setIsMapViewerOpen(false)}
+        imageUrl="https://uq61vjqz6vkmqy0m.public.blob.vercel-storage.com/1759528270507-Barovia.png"
+        title="Karta över Barovia"
+      />
     </>
   )
 }
