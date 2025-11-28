@@ -145,12 +145,12 @@ export default async function PlayerDashboard() {
                     <span className="text-stone-200">{character.speed} ft.</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Alignment</span>
-                    <span className="text-stone-200">{character.alignment || 'N/A'}</span>
+                    <span className="text-stone-500">Klass</span>
+                    <span className="text-stone-200">{character.className || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Bakgrund</span>
-                    <span className="text-stone-200 truncate ml-2">{character.background || 'N/A'}</span>
+                    <span className="text-stone-500">Level</span>
+                    <span className="text-stone-200">{character.level}</span>
                   </div>
                 </div>
               </Card>

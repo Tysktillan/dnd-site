@@ -145,7 +145,7 @@ export default function LoginPage() {
               </h1>
             </div>
             <div className="space-y-2">
-              <p className="text-stone-400 text-sm tracking-[0.3em] uppercase font-light">Kampanjhanterare</p>
+              <p className="text-stone-400 text-sm tracking-[0.3em] uppercase font-light">In i dimman</p>
               <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-red-900/50 to-transparent"></div>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 {/* Username Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-stone-400 uppercase tracking-wider">
-                    Identitet
+                    Användarnamn
                   </label>
                   <div className="relative">
                     <Input
@@ -176,7 +176,7 @@ export default function LoginPage() {
                         transition-all duration-300
                         ${focused === 'username' ? 'shadow-lg shadow-red-950/20' : ''}
                       `}
-                      placeholder="Ange din identitet..."
+                      placeholder="Ange ditt användarnamn..."
                       required
                       disabled={loading}
                     />
@@ -244,7 +244,7 @@ export default function LoginPage() {
                       </>
                     ) : (
                       <>
-                        <span>Gå in i Barovia</span>
+                        <span></span>
                         <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -259,7 +259,7 @@ export default function LoginPage() {
           {/* Bottom Quote */}
           <div className="mt-10 text-center select-none">
             <p className="text-stone-700 text-sm italic font-serif">
-              &quot;Djävulen Strahd väntar i skuggorna...&quot;
+              &quot;Strahd väntar i skuggorna...&quot;
             </p>
           </div>
         </div>
