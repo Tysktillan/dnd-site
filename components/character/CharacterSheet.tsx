@@ -522,8 +522,8 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                   className="bg-stone-900 border-stone-800 text-stone-100"
                 />
               </div>
-              <div className="grid grid-cols-12 gap-2">
-                <div className="col-span-4">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
                   <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Klass</Label>
                   <Select
                     value={character.className ?? ''}
@@ -541,8 +541,20 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                     </SelectContent>
                   </Select>
                 </div>
-                {character.className && subclasses.length > 0 && (
-                  <div className="col-span-5">
+                <div>
+                  <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level</Label>
+                  <NumberInput
+                    value={character.level}
+                    onChange={(e) => updateField('level', parseInt(e.target.value) || 1)}
+                    className="bg-stone-900 border-stone-800 text-stone-100"
+                    min={1}
+                    max={20}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {character.className && subclasses.length > 0 ? (
+                  <div>
                     <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subklass</Label>
                     <Select
                       value={character.subclass ?? 'none'}
@@ -563,40 +575,53 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                       </SelectContent>
                     </Select>
                   </div>
+                ) : (
+                  <div />
                 )}
-                <div className={character.className && subclasses.length > 0 ? "col-span-3" : "col-span-8"}>
-                  <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level</Label>
-                  <NumberInput
-                    value={character.level}
-                    onChange={(e) => updateField('level', parseInt(e.target.value) || 1)}
+                <div>
+                  <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Ras</Label>
+                  <Input
+                    value={character.race ?? ''}
+                    onChange={(e) => updateField('race', e.target.value)}
+                    placeholder="t.ex. Människa, Alv"
                     className="bg-stone-900 border-stone-800 text-stone-100"
-                    min={1}
-                    max={20}
                   />
                 </div>
               </div>
               {(character.className2 && character.className2.length > 0) && (
-                <div className="grid grid-cols-12 gap-2">
-                  <div className="col-span-4">
-                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Klass 2</Label>
-                    <Select
-                      value={character.className2 ?? ''}
-                      onValueChange={(value) => updateField('className2', value)}
-                    >
-                      <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
-                        <SelectValue placeholder="Välj klass" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-800">
-                        {DND_CLASSES.map((cls) => (
-                          <SelectItem key={cls.index} value={cls.name} className="text-stone-100 focus:bg-stone-800">
-                            {cls.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Klass 2</Label>
+                      <Select
+                        value={character.className2 ?? ''}
+                        onValueChange={(value) => updateField('className2', value)}
+                      >
+                        <SelectTrigger className="bg-stone-900 border-stone-800 text-stone-100 [&>span]:flex-1 [&>span]:text-left [&>svg]:w-3 [&>svg]:h-3">
+                          <SelectValue placeholder="Välj klass" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-stone-900 border-stone-800">
+                          {DND_CLASSES.map((cls) => (
+                            <SelectItem key={cls.index} value={cls.name} className="text-stone-100 focus:bg-stone-800">
+                              {cls.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level 2</Label>
+                      <NumberInput
+                        value={character.level2 ?? 0}
+                        onChange={(e) => updateField('level2', parseInt(e.target.value) || 0)}
+                        className="bg-stone-900 border-stone-800 text-stone-100"
+                        min={0}
+                        max={20}
+                      />
+                    </div>
                   </div>
                   {character.className2 && subclasses2.length > 0 && (
-                    <div className="col-span-5">
+                    <div>
                       <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Subklass 2</Label>
                       <Select
                         value={character.subclass2 ?? 'none'}
@@ -618,27 +643,8 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
                       </Select>
                     </div>
                   )}
-                  <div className={character.className2 && subclasses2.length > 0 ? "col-span-3" : "col-span-8"}>
-                    <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Level</Label>
-                    <NumberInput
-                      value={character.level2 ?? 0}
-                      onChange={(e) => updateField('level2', parseInt(e.target.value) || 0)}
-                      className="bg-stone-900 border-stone-800 text-stone-100"
-                      min={0}
-                      max={20}
-                    />
-                  </div>
-                </div>
+                </>
               )}
-              <div>
-                <Label className="text-xs text-stone-500 uppercase tracking-wider mb-2 block">Ras</Label>
-                <Input
-                  value={character.race ?? ''}
-                  onChange={(e) => updateField('race', e.target.value)}
-                  placeholder="t.ex. Människa, Alv"
-                  className="bg-stone-900 border-stone-800 text-stone-100"
-                />
-              </div>
             </div>
           </Card>
 
