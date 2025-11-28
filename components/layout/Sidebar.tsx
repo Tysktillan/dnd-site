@@ -237,7 +237,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       <MapViewer
         isOpen={isMapViewerOpen}
         onClose={() => setIsMapViewerOpen(false)}
-        imageUrl="https://uq61vjqz6vkmqy0m.public.blob.vercel-storage.com/1759528270507-Barovia.png"
+        imageUrl="https://y4xplm4cn5mtaodd.public.blob.vercel-storage.com/images/1759528270507-Barovia.png"
         title="Karta över Barovia"
       />
     </>
