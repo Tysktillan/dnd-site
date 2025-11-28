@@ -26,7 +26,7 @@ export function MapViewer({ isOpen, onClose, imageUrl, title }: MapViewerProps) 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/95 flex flex-col">
+    <div className="fixed inset-y-0 right-0 left-64 z-50 bg-black/95 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-stone-800 bg-black/50 backdrop-blur-sm">
         <h2 className="text-xl font-bold text-stone-100">{title}</h2>
