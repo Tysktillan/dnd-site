@@ -45,6 +45,7 @@ interface Subclass {
 const DND_CLASSES = [
   { index: 'barbarian', name: 'Barbarian' },
   { index: 'bard', name: 'Bard' },
+  { index: 'blood-hunter', name: 'Blood Hunter' },
   { index: 'cleric', name: 'Cleric' },
   { index: 'druid', name: 'Druid' },
   { index: 'fighter', name: 'Fighter' },
@@ -123,6 +124,17 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
       const classIndex = DND_CLASSES.find(c => c.name.toLowerCase() === character.className?.toLowerCase())?.index;
       if (!classIndex) return;
 
+      // Handle Blood Hunter subclasses manually (not in D&D 5e API)
+      if (classIndex === 'blood-hunter') {
+        setSubclasses([
+          { index: 'order-of-the-lycan', name: 'Order of the Lycan', url: '' },
+          { index: 'order-of-the-mutant', name: 'Order of the Mutant', url: '' },
+          { index: 'order-of-the-ghostslayer', name: 'Order of the Ghostslayer', url: '' },
+          { index: 'order-of-the-profane-soul', name: 'Order of the Profane Soul', url: '' },
+        ]);
+        return;
+      }
+
       try {
         const res = await fetch(`https://www.dnd5eapi.co/api/classes/${classIndex}`);
         const data = await res.json();
@@ -142,6 +154,17 @@ export default function CharacterSheet({ character: initialCharacter, secondaryC
 
       const classIndex = DND_CLASSES.find(c => c.name.toLowerCase() === character.className2?.toLowerCase())?.index;
       if (!classIndex) return;
+
+      // Handle Blood Hunter subclasses manually (not in D&D 5e API)
+      if (classIndex === 'blood-hunter') {
+        setSubclasses2([
+          { index: 'order-of-the-lycan', name: 'Order of the Lycan', url: '' },
+          { index: 'order-of-the-mutant', name: 'Order of the Mutant', url: '' },
+          { index: 'order-of-the-ghostslayer', name: 'Order of the Ghostslayer', url: '' },
+          { index: 'order-of-the-profane-soul', name: 'Order of the Profane Soul', url: '' },
+        ]);
+        return;
+      }
 
       try {
         const res = await fetch(`https://www.dnd5eapi.co/api/classes/${classIndex}`);
