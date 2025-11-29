@@ -39,11 +39,11 @@ export function MapViewer({ isOpen, onClose, imageUrl, title }: MapViewerProps) 
       </div>
 
       {/* Image - Full width, scrollable */}
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-auto p-4 flex items-start justify-center">
         <img
           src={imageUrl}
           alt={title}
-          className="w-full h-auto"
+          className="max-w-full max-h-full object-contain"
         />
       </div>
     </div>
