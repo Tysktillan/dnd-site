@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2, Music, Image as ImageIcon, Search, Tag, Volume2, X } from 'lucide-react'
 import NextImage from 'next/image'
+import { upload } from '@vercel/blob/client'
 import {
   Dialog,
   DialogContent,
@@ -104,19 +105,21 @@ export default function MediaLibraryPage() {
 
   const handleAudioFileUpload = async (file: File) => {
     setUploadingAudio(true)
-    const formData = new FormData()
-    formData.append('file', file)
 
     try {
-      const response = await fetch('/api/upload/audio', {
-        method: 'POST',
-        body: formData,
+      // Use client-side upload to bypass API route size limits
+      const timestamp = Date.now()
+      const filename = `audio/${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+
+      const blob = await upload(filename, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload/audio/token',
       })
-      const data = await response.json()
-      setAudioFormData({ ...audioFormData, url: data.url })
+
+      setAudioFormData({ ...audioFormData, url: blob.url })
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Failed to upload audio file')
+      alert('Failed to upload audio file. Make sure the file is under 50MB.')
     } finally {
       setUploadingAudio(false)
     }
